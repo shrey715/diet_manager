@@ -203,19 +203,29 @@ void FoodDatabase::loadBasicFoods() {
     }
     
     try {
-        json basicFoodsJson = json::parse(file);
+        std::string jsonContent((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+        file.close();
+        
+        if (jsonContent.empty()) {
+            std::cerr << "Warning: Basic food file is empty" << std::endl;
+            return;
+        }
+        
+        json basicFoodsJson = json::parse(jsonContent);
         
         for (const auto& foodJson : basicFoodsJson) {
-            auto food = BasicFood::fromJson(foodJson.dump());
-            if (food) {
-                foods[food->getId()] = food;
+            try {
+                auto food = BasicFood::fromJson(foodJson.dump());
+                if (food && !food->getId().empty()) {
+                    foods[food->getId()] = food;
+                }
+            } catch (const std::exception& e) {
+                std::cerr << "Error parsing food item: " << e.what() << std::endl;
             }
         }
     } catch (const std::exception& e) {
         std::cerr << "Error parsing basic foods: " << e.what() << std::endl;
     }
-    
-    file.close();
 }
 
 void FoodDatabase::loadCompositeFoods() {
@@ -226,17 +236,27 @@ void FoodDatabase::loadCompositeFoods() {
     }
     
     try {
-        json compositeFoodsJson = json::parse(file);
+        std::string jsonContent((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+        file.close();
+        
+        if (jsonContent.empty()) {
+            std::cerr << "Warning: Composite food file is empty" << std::endl;
+            return;
+        }
+        
+        json compositeFoodsJson = json::parse(jsonContent);
         
         for (const auto& foodJson : compositeFoodsJson) {
-            auto food = CompositeFood::fromJson(foodJson.dump(), foods);
-            if (food) {
-                foods[food->getId()] = food;
+            try {
+                auto food = CompositeFood::fromJson(foodJson.dump(), foods);
+                if (food && !food->getId().empty()) {
+                    foods[food->getId()] = food;
+                }
+            } catch (const std::exception& e) {
+                std::cerr << "Error parsing composite food: " << e.what() << std::endl;
             }
         }
     } catch (const std::exception& e) {
         std::cerr << "Error parsing composite foods: " << e.what() << std::endl;
     }
-    
-    file.close();
 }

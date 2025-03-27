@@ -26,13 +26,15 @@ void AddFoodCommand::undo() {
 
 RemoveFoodCommand::RemoveFoodCommand(LogManager* logManager, const std::string& foodId, 
                                    const std::chrono::system_clock::time_point& date)
-    : logManager(logManager), foodId(foodId), date(date), executed(false) {
+    : logManager(logManager), foodId(foodId), date(date), executed(false), servings(1.0) {
+    // Note: Adding default initialization for servings to avoid undefined behavior
+    
     // Save the servings before removal for undo
     auto logEntry = logManager->getLogEntry(date);
     if (logEntry) {
-        for (const auto& food : logEntry->getConsumedFoods()) {
-            if (food.first->getId() == foodId) {
-                servings = food.second;
+        for (const auto& foodTuple : logEntry->getConsumedFoods()) {
+            if (std::get<0>(foodTuple)->getId() == foodId) {
+                servings = std::get<1>(foodTuple);
                 break;
             }
         }
@@ -78,7 +80,8 @@ bool LogManager::addFoodToLog(const std::string& foodId, double servings,
     }
     
     auto logEntry = getLogEntry(date);
-    logEntry->addFood(food, servings);
+    // Make sure we're using the MealType parameter
+    logEntry->addFood(food, servings, MealType::OTHER);
     return true;
 }
 
@@ -89,7 +92,7 @@ bool LogManager::removeFoodFromLog(const std::string& foodId,
     // Check if food exists in log before removal
     bool foodExists = false;
     for (const auto& food : logEntry->getConsumedFoods()) {
-        if (food.first->getId() == foodId) {
+        if (std::get<0>(food)->getId() == foodId) {
             foodExists = true;
             break;
         }
@@ -229,7 +232,15 @@ void LogManager::loadLogEntries() {
     }
     
     try {
-        json logsJson = json::parse(file);
+        std::string jsonContent((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+        file.close();
+        
+        if (jsonContent.empty()) {
+            std::cerr << "Warning: Log file is empty" << std::endl;
+            return;
+        }
+
+        json logsJson = json::parse(jsonContent);
         
         for (const auto& logJson : logsJson) {
             auto logEntry = LogEntry::fromJson(logJson.dump(), foodDatabase->getFoodMap());
@@ -241,8 +252,6 @@ void LogManager::loadLogEntries() {
     } catch (const std::exception& e) {
         std::cerr << "Error parsing logs: " << e.what() << std::endl;
     }
-    
-    file.close();
 }
 
 std::string LogManager::dateToString(const std::chrono::system_clock::time_point& date) const {

@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <filesystem>
+#include "utils/data_checker.h"
 
 namespace fs = std::filesystem;
 
@@ -38,7 +39,6 @@ int main(int argc, char* argv[]) {
     if (argc > 5) userFilePath = argv[5];
     
     // make sure directories exist so we don't crash later
-    // this assignment is already late and I can't deal with more bugs
     try {
         ensureDirectoryExists(basicFoodFilePath);
         ensureDirectoryExists(compositeFoodFilePath);
@@ -50,11 +50,42 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     
-    // actual program starts here
-    // wrapped in try-catch because my professor will fail me if I don't handle exceptions
+    // Set up signal handlers for better crash reporting
+    std::set_terminate([]() {
+        std::cerr << "Unhandled exception detected!" << std::endl;
+        std::cerr << "Program terminated abnormally." << std::endl;
+        std::abort();
+    });
+    
+    // Check and fix data files if needed
     try {
+        DataChecker::checkAndFixDataFiles(basicFoodFilePath, compositeFoodFilePath, logFilePath, userFilePath);
+    } catch (const std::exception& e) {
+        std::cerr << "Error checking data files: " << e.what() << std::endl;
+        std::cerr << "The program will try to continue anyway..." << std::endl;
+    }
+    
+    // actual program starts here
+    try {
+        // First check if files are readable
+        if (!std::filesystem::exists(basicFoodFilePath) || 
+            !std::filesystem::exists(compositeFoodFilePath)) {
+            // Create empty files if they don't exist
+            std::ofstream bf(basicFoodFilePath), cf(compositeFoodFilePath);
+            bf << "[]"; // Valid empty JSON array
+            cf << "[]"; // Valid empty JSON array
+        }
+        
         CLI cli(basicFoodFilePath, compositeFoodFilePath, logFilePath, userFilePath);
         cli.run();
+    } catch (const std::bad_alloc& e) {
+        std::cerr << "MEMORY ERROR: Out of memory! " << std::endl;
+        std::cerr << "Try closing other applications or freeing up RAM." << std::endl;
+        return 1;
+    } catch (const nlohmann::json::exception& e) {
+        std::cerr << "JSON ERROR: " << e.what() << std::endl;
+        std::cerr << "One of your data files might be corrupted. Check them and try again." << std::endl;
+        return 1;
     } catch (const std::exception& e) {
         std::cerr << "FATAL ERROR: " << e.what() << std::endl;
         std::cerr << "Program crashed. Contact support (lol jk, it's just me)" << std::endl;
