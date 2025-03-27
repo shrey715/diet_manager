@@ -1,0 +1,131 @@
+[
+    {
+        "calories": 123232.0,
+        "id": "%%%%",
+        "keywords": [
+            "penis",
+            "penis",
+            "penis",
+            "penis",
+            "penis",
+            "penis",
+            "penis",
+            "penis"
+        ],
+        "type": "basic"
+    },
+    {
+        "calories": 1.2222222222222223e+204,
+        "id": "%%%%%%",
+        "keywords": [
+            "aassssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss"
+        ],
+        "type": "basic"
+    },
+    {
+        "calories": 0.0,
+        "id": "NULL",
+        "keywords": [
+            "NULL"
+        ],
+        "type": "basic"
+    },
+    {
+        "calories": 52.0,
+        "id": "apple",
+        "keywords": [
+            "fruit",
+            "fresh"
+        ],
+        "type": "basic"
+    },
+    {
+        "calories": 89.0,
+        "id": "banana",
+        "keywords": [
+            "fruit",
+            "fresh"
+        ],
+        "type": "basic"
+    },
+    {
+        "calories": 75.0,
+        "id": "bread_slice",
+        "keywords": [
+            "bread",
+            "grain",
+            "wheat"
+        ],
+        "type": "basic"
+    },
+    {
+        "calories": 113.0,
+        "id": "cheddar_cheese",
+        "keywords": [
+            "cheese",
+            "dairy",
+            "cheddar"
+        ],
+        "type": "basic"
+    },
+    {
+        "calories": 165.0,
+        "id": "chicken_breast",
+        "keywords": [
+            "meat",
+            "chicken",
+            "protein"
+        ],
+        "type": "basic"
+    },
+    {
+        "calories": 51.0,
+        "id": "grape_jelly",
+        "keywords": [
+            "jelly",
+            "spread",
+            "sweet",
+            "grape"
+        ],
+        "type": "basic"
+    },
+    {
+        "calories": 150.0,
+        "id": "hot_dog",
+        "keywords": [
+            "meat",
+            "processed",
+            "sausage"
+        ],
+        "type": "basic"
+    },
+    {
+        "calories": 188.0,
+        "id": "peanut_butter",
+        "keywords": [
+            "peanut",
+            "spread",
+            "nut"
+        ],
+        "type": "basic"
+    },
+    {
+        "calories": 205.0,
+        "id": "rice_cup",
+        "keywords": [
+            "grain",
+            "carbohydrate"
+        ],
+        "type": "basic"
+    },
+    {
+        "calories": 146.0,
+        "id": "whole_milk",
+        "keywords": [
+            "milk",
+            "dairy",
+            "beverage"
+        ],
+        "type": "basic"
+    }
+]

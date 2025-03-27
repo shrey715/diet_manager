@@ -1,0 +1,37 @@
+[
+    {
+        "components": [
+            {
+                "food_id": "grape_jelly",
+                "servings": 1.0
+            }
+        ],
+        "id": "pbj_sandwich",
+        "keywords": [
+            "sandwich",
+            "peanut butter",
+            "jelly",
+            "lunch"
+        ],
+        "type": "composite"
+    },
+    {
+        "components": [
+            {
+                "food_id": "bread_slice",
+                "servings": 2.0
+            },
+            {
+                "food_id": "peanut_butter",
+                "servings": 1.0
+            }
+        ],
+        "id": "peanut_butter_sandwich",
+        "keywords": [
+            "sandwich",
+            "peanut butter",
+            "lunch"
+        ],
+        "type": "composite"
+    }
+]
