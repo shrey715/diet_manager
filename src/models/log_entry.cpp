@@ -4,7 +4,7 @@
 #include <sstream>
 #include <iomanip>
 #include <random>
-#include <iostream> // Added this include for std::cerr
+#include <iostream>
 
 using json = nlohmann::json;
 
@@ -16,35 +16,27 @@ LogEntry::LogEntry(const std::string& id, const std::chrono::system_clock::time_
     : id(id), date(date) {
 }
 
-std::string LogEntry::getId() const {
-    return id;
-}
-
-std::chrono::system_clock::time_point LogEntry::getDate() const {
-    return date;
-}
-
-const std::vector<std::tuple<std::shared_ptr<Food>, double, MealType>>& LogEntry::getConsumedFoods() const {
-    return consumedFoods;
-}
-
-void LogEntry::setId(const std::string& id) {
-    this->id = id;
-}
-
-void LogEntry::setDate(const std::chrono::system_clock::time_point& date) {
-    this->date = date;
-}
+// Standard getters and setters
+std::string LogEntry::getId() const { return id; }
+std::chrono::system_clock::time_point LogEntry::getDate() const { return date; }
+const std::vector<LogEntry::FoodEntry>& LogEntry::getConsumedFoods() const { return consumedFoods; }
+void LogEntry::setId(const std::string& id) { this->id = id; }
+void LogEntry::setDate(const std::chrono::system_clock::time_point& date) { this->date = date; }
 
 void LogEntry::addFood(std::shared_ptr<Food> food, double servings, MealType mealType) {
+    if (!food || servings <= 0) {
+        std::cerr << "Invalid food or serving size" << std::endl;
+        return;
+    }
+    
     // Check if food already exists, if so, update servings
     auto it = std::find_if(consumedFoods.begin(), consumedFoods.end(),
-        [&](const std::tuple<std::shared_ptr<Food>, double, MealType>& entry) {
+        [&food](const FoodEntry& entry) {
             return std::get<0>(entry)->getId() == food->getId();
         });
     
     if (it != consumedFoods.end()) {
-        // Update servings
+        // Update servings for existing entry
         std::get<1>(*it) += servings;
     } else {
         // Add new food entry
@@ -55,7 +47,7 @@ void LogEntry::addFood(std::shared_ptr<Food> food, double servings, MealType mea
 void LogEntry::removeFood(const std::string& foodId) {
     consumedFoods.erase(
         std::remove_if(consumedFoods.begin(), consumedFoods.end(),
-            [&](const std::tuple<std::shared_ptr<Food>, double, MealType>& entry) {
+            [&foodId](const FoodEntry& entry) {
                 return std::get<0>(entry)->getId() == foodId;
             }),
         consumedFoods.end());
@@ -98,6 +90,7 @@ std::map<MealType, double> LogEntry::getCaloriesByMealType() const {
     return caloriesByMeal;
 }
 
+// Serialization functions
 void LogEntry::toJson(std::ostream& os) const {
     try {
         json j;
@@ -106,9 +99,9 @@ void LogEntry::toJson(std::ostream& os) const {
         
         json foodsJson = json::array();
         for (const auto& entry : consumedFoods) {
-            if (std::get<0>(entry)) {  // Make sure food pointer is valid
+            if (auto food = std::get<0>(entry)) {
                 json foodJson;
-                foodJson["food_id"] = std::get<0>(entry)->getId();
+                foodJson["food_id"] = food->getId();
                 foodJson["servings"] = std::get<1>(entry);
                 foodJson["meal_type"] = mealTypeToString(std::get<2>(entry));
                 foodsJson.push_back(foodJson);
@@ -119,7 +112,7 @@ void LogEntry::toJson(std::ostream& os) const {
         os << j.dump(4);
     } catch (const std::exception& e) {
         std::cerr << "Error generating JSON for LogEntry: " << e.what() << std::endl;
-        // Output a minimal valid JSON object
+        // Fallback with minimal valid JSON
         os << "{\"id\":\"" << id << "\",\"date\":\"" << dateToString(date) << "\",\"consumed_foods\":[]}";
     }
 }
@@ -130,45 +123,44 @@ std::shared_ptr<LogEntry> LogEntry::fromJson(
     
     try {
         json j = json::parse(jsonString);
-        
         auto logEntry = std::make_shared<LogEntry>();
+        
+        // Set basic properties
         logEntry->setId(j["id"]);
         logEntry->setDate(stringToDate(j["date"]));
         
+        // Load consumed foods
         if (j.contains("consumed_foods") && j["consumed_foods"].is_array()) {
             for (const auto& foodJson : j["consumed_foods"]) {
-                if (!foodJson.contains("food_id") || !foodJson.contains("servings")) {
-                    std::cerr << "Warning: Invalid food entry in log" << std::endl;
+                // Skip invalid entries
+                if (!foodJson.contains("food_id") || !foodJson.contains("servings"))
                     continue;
-                }
                 
                 std::string foodId = foodJson["food_id"];
                 double servings = foodJson["servings"];
                 
-                // Default to OTHER if meal_type is missing
+                // Default to OTHER meal type if not specified
                 MealType mealType = MealType::OTHER;
                 if (foodJson.contains("meal_type")) {
                     mealType = mealTypeFromString(foodJson["meal_type"]);
                 }
                 
-                if (foodDatabase.find(foodId) != foodDatabase.end()) {
-                    auto foodPtr = foodDatabase.at(foodId);
-                    if (foodPtr) {
-                        logEntry->addFood(foodPtr, servings, mealType);
-                    }
-                } else {
-                    std::cerr << "Warning: Food '" << foodId << "' not found in database" << std::endl;
+                // Add food if it exists in database
+                auto it = foodDatabase.find(foodId);
+                if (it != foodDatabase.end() && it->second) {
+                    logEntry->addFood(it->second, servings, mealType);
                 }
             }
         }
         
         return logEntry;
     } catch (const std::exception& e) {
-        std::cerr << "Error parsing LogEntry from JSON: " << e.what() << std::endl;
-        return std::make_shared<LogEntry>(); // Return a valid but empty log entry
+        std::cerr << "Error parsing LogEntry: " << e.what() << std::endl;
+        return std::make_shared<LogEntry>(); // Return empty log entry on error
     }
 }
 
+// Utility methods
 std::string LogEntry::generateId() {
     static std::random_device rd;
     static std::mt19937 gen(rd());
@@ -189,6 +181,7 @@ std::string LogEntry::generateId() {
     return uuid;
 }
 
+// Date/time conversion functions
 std::string LogEntry::dateToString(const std::chrono::system_clock::time_point& date) {
     auto time = std::chrono::system_clock::to_time_t(date);
     std::stringstream ss;
@@ -203,6 +196,7 @@ std::chrono::system_clock::time_point LogEntry::stringToDate(const std::string& 
     return std::chrono::system_clock::from_time_t(std::mktime(&tm));
 }
 
+// Meal type conversion helpers
 std::string LogEntry::mealTypeToString(MealType mealType) {
     switch (mealType) {
         case MealType::BREAKFAST: return "Breakfast";

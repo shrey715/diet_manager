@@ -10,8 +10,7 @@ using json = nlohmann::json;
 // Command implementations
 AddFoodCommand::AddFoodCommand(LogManager* logManager, const std::string& foodId, 
                              double servings, const std::chrono::system_clock::time_point& date)
-    : logManager(logManager), foodId(foodId), servings(servings), date(date), executed(false) {
-}
+    : logManager(logManager), foodId(foodId), servings(servings), date(date), executed(false) {}
 
 void AddFoodCommand::execute() {
     executed = logManager->addFoodToLog(foodId, servings, date);
@@ -27,14 +26,13 @@ void AddFoodCommand::undo() {
 RemoveFoodCommand::RemoveFoodCommand(LogManager* logManager, const std::string& foodId, 
                                    const std::chrono::system_clock::time_point& date)
     : logManager(logManager), foodId(foodId), date(date), executed(false), servings(1.0) {
-    // Note: Adding default initialization for servings to avoid undefined behavior
     
-    // Save the servings before removal for undo
+    // Save servings for potential undo
     auto logEntry = logManager->getLogEntry(date);
     if (logEntry) {
-        for (const auto& foodTuple : logEntry->getConsumedFoods()) {
-            if (std::get<0>(foodTuple)->getId() == foodId) {
-                servings = std::get<1>(foodTuple);
+        for (const auto& entry : logEntry->getConsumedFoods()) {
+            if (std::get<0>(entry)->getId() == foodId) {
+                servings = std::get<1>(entry);
                 break;
             }
         }
@@ -57,8 +55,7 @@ LogManager::LogManager(const std::string& logFilePath,
                      std::shared_ptr<User> user,
                      std::shared_ptr<FoodDatabase> foodDatabase)
     : logFilePath(logFilePath), user(user), foodDatabase(foodDatabase), 
-      currentDate(std::chrono::system_clock::now()) {
-}
+      currentDate(std::chrono::system_clock::now()) {}
 
 std::shared_ptr<LogEntry> LogManager::getLogEntry(const std::chrono::system_clock::time_point& date) {
     std::string dateStr = dateToString(date);
@@ -80,7 +77,6 @@ bool LogManager::addFoodToLog(const std::string& foodId, double servings,
     }
     
     auto logEntry = getLogEntry(date);
-    // Make sure we're using the MealType parameter
     logEntry->addFood(food, servings, MealType::OTHER);
     return true;
 }
@@ -89,23 +85,22 @@ bool LogManager::removeFoodFromLog(const std::string& foodId,
                                  const std::chrono::system_clock::time_point& date) {
     auto logEntry = getLogEntry(date);
     
-    // Check if food exists in log before removal
+    // Check if food exists before removal
     bool foodExists = false;
-    for (const auto& food : logEntry->getConsumedFoods()) {
-        if (std::get<0>(food)->getId() == foodId) {
+    for (const auto& entry : logEntry->getConsumedFoods()) {
+        if (std::get<0>(entry)->getId() == foodId) {
             foodExists = true;
             break;
         }
     }
     
-    if (!foodExists) {
-        return false;
-    }
+    if (!foodExists) return false;
     
     logEntry->removeFood(foodId);
     return true;
 }
 
+// Date operations
 void LogManager::setCurrentDate(const std::chrono::system_clock::time_point& date) {
     currentDate = date;
 }
@@ -114,23 +109,19 @@ std::chrono::system_clock::time_point LogManager::getCurrentDate() const {
     return currentDate;
 }
 
+// Command execution with undo/redo support
 void LogManager::executeCommand(std::shared_ptr<Command> command) {
     command->execute();
     commandHistory.push(command);
     
-    // Clear redo stack when a new command is executed
+    // Clear redo stack when new command is executed
     while (!redoStack.empty()) {
         redoStack.pop();
     }
 }
 
-bool LogManager::canUndo() const {
-    return !commandHistory.empty();
-}
-
-bool LogManager::canRedo() const {
-    return !redoStack.empty();
-}
+bool LogManager::canUndo() const { return !commandHistory.empty(); }
+bool LogManager::canRedo() const { return !redoStack.empty(); }
 
 void LogManager::undo() {
     if (canUndo()) {
@@ -151,34 +142,26 @@ void LogManager::redo() {
 }
 
 void LogManager::clearHistory() {
-    while (!commandHistory.empty()) {
-        commandHistory.pop();
-    }
-    while (!redoStack.empty()) {
-        redoStack.pop();
-    }
+    while (!commandHistory.empty()) commandHistory.pop();
+    while (!redoStack.empty()) redoStack.pop();
 }
 
+// Calorie calculations
 double LogManager::getConsumedCalories(const std::chrono::system_clock::time_point& date) const {
     std::string dateStr = dateToString(date);
     auto it = logEntries.find(dateStr);
-    if (it != logEntries.end()) {
-        return it->second->getTotalCalories();
-    }
-    return 0.0;
+    return (it != logEntries.end()) ? it->second->getTotalCalories() : 0.0;
 }
 
 double LogManager::getTargetCalories() const {
-    if (user) {
-        return user->calculateTargetCalories();
-    }
-    return 0.0;
+    return user ? user->calculateTargetCalories() : 0.0;
 }
 
 double LogManager::getCalorieDifference(const std::chrono::system_clock::time_point& date) const {
     return getConsumedCalories(date) - getTargetCalories();
 }
 
+// Save and load operations
 void LogManager::saveLogs() const {
     saveLogEntries();
 }
@@ -197,16 +180,18 @@ std::shared_ptr<User> LogManager::getUser() const {
 
 std::vector<std::shared_ptr<LogEntry>> LogManager::getAllLogEntries() const {
     std::vector<std::shared_ptr<LogEntry>> entries;
+    entries.reserve(logEntries.size());
     for (const auto& pair : logEntries) {
         entries.push_back(pair.second);
     }
     return entries;
 }
 
+// Private helper methods
 void LogManager::saveLogEntries() const {
     std::ofstream file(logFilePath);
     if (!file.is_open()) {
-        std::cerr << "Error: Could not open file for writing: " << logFilePath << std::endl;
+        std::cerr << "Error: Could not save logs to " << logFilePath << std::endl;
         return;
     }
     
@@ -227,18 +212,16 @@ void LogManager::loadLogEntries() {
     
     std::ifstream file(logFilePath);
     if (!file.is_open()) {
-        std::cerr << "Warning: Could not open file for reading: " << logFilePath << std::endl;
+        std::cerr << "Warning: Could not load logs from " << logFilePath << std::endl;
         return;
     }
     
     try {
-        std::string jsonContent((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+        std::string jsonContent((std::istreambuf_iterator<char>(file)), 
+                               std::istreambuf_iterator<char>());
         file.close();
         
-        if (jsonContent.empty()) {
-            std::cerr << "Warning: Log file is empty" << std::endl;
-            return;
-        }
+        if (jsonContent.empty()) return;
 
         json logsJson = json::parse(jsonContent);
         

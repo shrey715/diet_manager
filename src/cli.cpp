@@ -41,8 +41,8 @@ void CLI::run() {
     // Clear the screen and show welcome message
     clearScreen();
     displayLogo();
-    std::cout << Color::GREEN << "Welcome to Diet Manager!" << Color::RESET << std::endl;
-    std::cout << "Type '" << Color::CYAN << "help" << Color::RESET << "' to see available commands." << std::endl;
+    std::cout << Colors::GREEN << "Welcome to Diet Manager!" << Colors::RESET << std::endl;
+    std::cout << "Type '" << Colors::CYAN << "help" << Colors::RESET << "' to see available commands." << std::endl;
     
     // Load data
     foodDatabase->loadDatabase();
@@ -81,8 +81,8 @@ void CLI::run() {
             it->second.handler(args);
         } else {
             clearScreen();
-            std::cout << Color::RED << "Unknown command: " << commandName << Color::RESET << std::endl;
-            std::cout << "Type '" << Color::CYAN << "help" << Color::RESET << "' to see available commands." << std::endl;
+            std::cout << Colors::RED << "Unknown command: " << commandName << Colors::RESET << std::endl;
+            std::cout << "Type '" << Colors::CYAN << "help" << Colors::RESET << "' to see available commands." << std::endl;
             
             // Return to previous view after a short delay
             sleep(1);
@@ -96,7 +96,7 @@ void CLI::run() {
     logManager->saveLogs();
     
     clearScreen();
-    std::cout << Color::GREEN << "Thank you for using Diet Manager. Goodbye!" << Color::RESET << std::endl;
+    std::cout << Colors::GREEN << "Thank you for using Diet Manager. Goodbye!" << Colors::RESET << std::endl;
 }
 
 void CLI::registerCommands() {
@@ -195,9 +195,9 @@ void CLI::displayHeader(const std::string& title) const {
     getTerminalSize();
     std::string centeredTitle = centerText(title, termWidth - 4);
     
-    std::cout << Color::HEADER << "┌" << std::string(termWidth - 2, '-') << "┐" << Color::RESET << std::endl;
-    std::cout << Color::HEADER << "│ " << std::left << std::setw(termWidth - 4) << centeredTitle << " │" << Color::RESET << std::endl;
-    std::cout << Color::HEADER << "└" << std::string(termWidth - 2, '-') << "┘" << Color::RESET << std::endl;
+    std::cout << Colors::HEADER << "┌" << std::string(termWidth - 2, '-') << "┐" << Colors::RESET << std::endl;
+    std::cout << Colors::HEADER << "│ " << std::left << std::setw(termWidth - 4) << centeredTitle << " │" << Colors::RESET << std::endl;
+    std::cout << Colors::HEADER << "└" << std::string(termWidth - 2, '-') << "┘" << Colors::RESET << std::endl;
 }
 
 void CLI::displayFooter() const {
@@ -205,9 +205,9 @@ void CLI::displayFooter() const {
     std::string dateStr = LogEntry::dateToString(logManager->getCurrentDate());
     std::string footerText = "Current date: " + dateStr + " | Press 'help' for commands | 'view' to change views";
     
-    std::cout << Color::HEADER << "┌" << std::string(termWidth - 2, '-') << "┐" << Color::RESET << std::endl;
-    std::cout << Color::HEADER << "│ " << std::left << std::setw(termWidth - 4) << footerText << " │" << Color::RESET << std::endl;
-    std::cout << Color::HEADER << "└" << std::string(termWidth - 2, '-') << "┘" << Color::RESET << std::endl;
+    std::cout << Colors::HEADER << "┌" << std::string(termWidth - 2, '-') << "┐" << Colors::RESET << std::endl;
+    std::cout << Colors::HEADER << "│ " << std::left << std::setw(termWidth - 4) << footerText << " │" << Colors::RESET << std::endl;
+    std::cout << Colors::HEADER << "└" << std::string(termWidth - 2, '-') << "┘" << Colors::RESET << std::endl;
 }
 
 void CLI::displayStatusBar() const {
@@ -240,16 +240,16 @@ void CLI::displayStatusBar() const {
     // Status bar color depends on percentage
     std::string statusColor;
     if (percentage > 100) {
-        statusColor = Color::ERROR;  // Over calorie limit
+        statusColor = Colors::ERROR;  // Over calorie limit
     } else if (percentage > 85) {
-        statusColor = Color::WARNING;  // Close to limit
+        statusColor = Colors::WARNING;  // Close to limit
     } else {
-        statusColor = Color::SUCCESS;  // Good
+        statusColor = Colors::SUCCESS;  // Good
     }
     
     // Display status bar
-    std::cout << Color::BG_BLACK << Color::WHITE << " " << dateInfo << " | " 
-              << calorieInfo << " " << statusColor << progressBar << Color::RESET << std::endl;
+    std::cout << Colors::BG_BLACK << Colors::WHITE << " " << dateInfo << " | " 
+              << calorieInfo << " " << statusColor << progressBar << Colors::RESET << std::endl;
     std::cout << std::string(termWidth, '-') << std::endl;
 }
 
@@ -265,7 +265,7 @@ void CLI::displayMenuPrompt() const {
         case ViewMode::COMMAND_HISTORY: viewName = "Command History"; break;
     }
     
-    std::cout << std::endl << Color::CYAN << "[" << viewName << "] " << Color::RESET << "> ";
+    std::cout << std::endl << Colors::CYAN << "[" << viewName << "] " << Colors::RESET << "> ";
 }
 
 void CLI::setView(ViewMode view) {
@@ -311,40 +311,40 @@ void CLI::displayMainMenu() const {
     displayHeader("DIET MANAGER - MAIN MENU");
     displayStatusBar();
     
-    std::cout << Color::YELLOW << "╔══════════════════════════════╗" << Color::RESET << std::endl;
-    std::cout << Color::YELLOW << "║" << Color::RESET << Color::INFO << " Diet Manager Main Menu       " << Color::RESET << Color::YELLOW << "║" << Color::RESET << std::endl;
-    std::cout << Color::YELLOW << "╚══════════════════════════════╝" << Color::RESET << std::endl;
+    std::cout << Colors::YELLOW << "╔══════════════════════════════╗" << Colors::RESET << std::endl;
+    std::cout << Colors::YELLOW << "║" << Colors::RESET << Colors::INFO << " Diet Manager Main Menu       " << Colors::RESET << Colors::YELLOW << "║" << Colors::RESET << std::endl;
+    std::cout << Colors::YELLOW << "╚══════════════════════════════╝" << Colors::RESET << std::endl;
     
     std::cout << std::endl;
-    std::cout << Color::SUCCESS << "Available Views:" << Color::RESET << std::endl;
-    std::cout << "  " << Color::BOLD << "1." << Color::RESET << " " << Color::INFO << "Food Database" << Color::RESET << " - Manage foods" << std::endl;
-    std::cout << "  " << Color::BOLD << "2." << Color::RESET << " " << Color::INFO << "Log Entry" << Color::RESET << " - Track daily food consumption" << std::endl;
-    std::cout << "  " << Color::BOLD << "3." << Color::RESET << " " << Color::INFO << "User Profile" << Color::RESET << " - Update personal information" << std::endl;
-    std::cout << "  " << Color::BOLD << "4." << Color::RESET << " " << Color::INFO << "Help" << Color::RESET << " - Show available commands" << std::endl;
-    std::cout << "  " << Color::BOLD << "5." << Color::RESET << " " << Color::INFO << "Command History" << Color::RESET << " - View previous commands" << std::endl;
+    std::cout << Colors::SUCCESS << "Available Views:" << Colors::RESET << std::endl;
+    std::cout << "  " << Colors::BOLD << "1." << Colors::RESET << " " << Colors::INFO << "Food Database" << Colors::RESET << " - Manage foods" << std::endl;
+    std::cout << "  " << Colors::BOLD << "2." << Colors::RESET << " " << Colors::INFO << "Log Entry" << Colors::RESET << " - Track daily food consumption" << std::endl;
+    std::cout << "  " << Colors::BOLD << "3." << Colors::RESET << " " << Colors::INFO << "User Profile" << Colors::RESET << " - Update personal information" << std::endl;
+    std::cout << "  " << Colors::BOLD << "4." << Colors::RESET << " " << Colors::INFO << "Help" << Colors::RESET << " - Show available commands" << std::endl;
+    std::cout << "  " << Colors::BOLD << "5." << Colors::RESET << " " << Colors::INFO << "Command History" << Colors::RESET << " - View previous commands" << std::endl;
     
     std::cout << std::endl;
-    std::cout << "Use '" << Color::MAGENTA << "view <name>" << Color::RESET << "' to switch views, e.g. '" << 
-               Color::MAGENTA << "view food" << Color::RESET << "'" << std::endl;
-    std::cout << "Type '" << Color::ERROR << "exit" << Color::RESET << "' to quit the application" << std::endl;
+    std::cout << "Use '" << Colors::MAGENTA << "view <name>" << Colors::RESET << "' to switch views, e.g. '" << 
+               Colors::MAGENTA << "view food" << Colors::RESET << "'" << std::endl;
+    std::cout << "Type '" << Colors::ERROR << "exit" << Colors::RESET << "' to quit the application" << std::endl;
     
     // Display today's summary
     std::cout << std::endl;
-    std::cout << Color::GREEN << "Today's Summary:" << Color::RESET << std::endl;
+    std::cout << Colors::GREEN << "Today's Summary:" << Colors::RESET << std::endl;
     std::chrono::system_clock::time_point today = logManager->getCurrentDate();
     double consumed = logManager->getConsumedCalories(today);
     double target = logManager->getTargetCalories();
     double difference = target - consumed;
     
-    std::cout << "  Date: " << Color::YELLOW << LogEntry::dateToString(today) << Color::RESET << std::endl;
-    std::cout << "  Consumed calories: " << Color::CYAN << consumed << Color::RESET << std::endl;
-    std::cout << "  Target calories: " << Color::CYAN << target << Color::RESET << std::endl;
+    std::cout << "  Date: " << Colors::YELLOW << LogEntry::dateToString(today) << Colors::RESET << std::endl;
+    std::cout << "  Consumed calories: " << Colors::CYAN << consumed << Colors::RESET << std::endl;
+    std::cout << "  Target calories: " << Colors::CYAN << target << Colors::RESET << std::endl;
     
     // Show remaining or excess calories
     if (difference >= 0) {
-        std::cout << "  Remaining: " << Color::SUCCESS << difference << " calories" << Color::RESET << std::endl;
+        std::cout << "  Remaining: " << Colors::SUCCESS << difference << " calories" << Colors::RESET << std::endl;
     } else {
-        std::cout << "  Excess: " << Color::ERROR << -difference << " calories" << Color::RESET << std::endl;
+        std::cout << "  Excess: " << Colors::ERROR << -difference << " calories" << Colors::RESET << std::endl;
     }
 }
 
@@ -372,7 +372,7 @@ void CLI::handleView(const std::vector<std::string>& args) {
     } else if (viewName == "history") {
         setView(ViewMode::COMMAND_HISTORY);
     } else {
-        std::cout << Color::RED << "Unknown view: " << viewName << Color::RESET << std::endl;
+        std::cout << Colors::RED << "Unknown view: " << viewName << Colors::RESET << std::endl;
     }
 }
 
@@ -388,11 +388,11 @@ void CLI::displayCommandHistory() const {
     displayHeader("COMMAND HISTORY");
     
     if (commandHistory.empty()) {
-        std::cout << Color::WARNING << "No commands in history." << Color::RESET << std::endl;
+        std::cout << Colors::WARNING << "No commands in history." << Colors::RESET << std::endl;
         return;
     }
     
-    std::cout << Color::SUCCESS << "Recent commands:" << Color::RESET << std::endl;
+    std::cout << Colors::SUCCESS << "Recent commands:" << Colors::RESET << std::endl;
     
     size_t count = 20; // Default number of commands to show
     
@@ -400,7 +400,7 @@ void CLI::displayCommandHistory() const {
     for (const auto& cmd : commandHistory) {
         if (i >= count) break;
         
-        std::cout << Color::INFO << std::setw(3) << (i + 1) << ". " << Color::RESET << cmd << std::endl;
+        std::cout << Colors::INFO << std::setw(3) << (i + 1) << ". " << Colors::RESET << cmd << std::endl;
         ++i;
     }
 }
@@ -415,7 +415,7 @@ void CLI::handleViewFood(const std::vector<std::string>& args) {
     auto food = foodDatabase->getFood(foodId);
     
     if (!food) {
-        std::cout << Color::RED << "Food not found: " << foodId << Color::RESET << std::endl;
+        std::cout << Colors::RED << "Food not found: " << foodId << Colors::RESET << std::endl;
         return;
     }
     
@@ -437,7 +437,7 @@ void CLI::displayFoodDatabaseView() const {
     auto foods = foodDatabase->getAllFoods();
     
     if (foods.empty()) {
-        std::cout << Color::YELLOW << "No foods in the database." << Color::RESET << std::endl;
+        std::cout << Colors::YELLOW << "No foods in the database." << Colors::RESET << std::endl;
         return;
     }
     
@@ -459,13 +459,13 @@ void CLI::displayFoodDatabaseView() const {
     
     // Display basic foods
     if (!basicFoods.empty()) {
-        std::cout << Color::CYAN << "╔" << std::string(termWidth - 2, '=') << "╗" << Color::RESET << std::endl;
-        std::cout << Color::CYAN << "║" << Color::RESET << " BASIC FOODS " << std::string(termWidth - 14, ' ') << Color::CYAN << "║" << Color::RESET << std::endl;
-        std::cout << Color::CYAN << "╠" << std::string(termWidth - 2, '=') << "╣" << Color::RESET << std::endl;
+        std::cout << Colors::CYAN << "╔" << std::string(termWidth - 2, '=') << "╗" << Colors::RESET << std::endl;
+        std::cout << Colors::CYAN << "║" << Colors::RESET << " BASIC FOODS " << std::string(termWidth - 14, ' ') << Colors::CYAN << "║" << Colors::RESET << std::endl;
+        std::cout << Colors::CYAN << "╠" << std::string(termWidth - 2, '=') << "╣" << Colors::RESET << std::endl;
         
-        std::cout << Color::WHITE << std::left << std::setw(25) << "ID" 
-                  << std::setw(10) << "CALORIES" << "KEYWORDS" << Color::RESET << std::endl;
-        std::cout << Color::CYAN << "╠" << std::string(termWidth - 2, '=') << "╣" << Color::RESET << std::endl;
+        std::cout << Colors::WHITE << std::left << std::setw(25) << "ID" 
+                  << std::setw(10) << "CALORIES" << "KEYWORDS" << Colors::RESET << std::endl;
+        std::cout << Colors::CYAN << "╠" << std::string(termWidth - 2, '=') << "╣" << Colors::RESET << std::endl;
         
         for (const auto& food : basicFoods) {
             std::string keywordStr;
@@ -477,23 +477,23 @@ void CLI::displayFoodDatabaseView() const {
                 keywordStr = keywordStr.substr(0, 32) + "...";
             }
             
-            std::cout << Color::GREEN << std::left << std::setw(25) << food->getId()
-                      << Color::YELLOW << std::setw(10) << formatCalories(food->getCaloriesPerServing())
-                      << Color::DIM << keywordStr << Color::RESET << std::endl;
+            std::cout << Colors::GREEN << std::left << std::setw(25) << food->getId()
+                      << Colors::YELLOW << std::setw(10) << formatCalories(food->getCaloriesPerServing())
+                      << Colors::DIM << keywordStr << Colors::RESET << std::endl;
         }
-        std::cout << Color::CYAN << "╚" << std::string(termWidth - 2, '=') << "╝" << Color::RESET << std::endl;
+        std::cout << Colors::CYAN << "╚" << std::string(termWidth - 2, '=') << "╝" << Colors::RESET << std::endl;
     }
     
     // Display composite foods
     if (!compositeFoods.empty()) {
         std::cout << std::endl;
-        std::cout << Color::MAGENTA << "╔" << std::string(termWidth - 2, '=') << "╗" << Color::RESET << std::endl;
-        std::cout << Color::MAGENTA << "║" << Color::RESET << " COMPOSITE FOODS " << std::string(termWidth - 18, ' ') << Color::MAGENTA << "║" << Color::RESET << std::endl;
-        std::cout << Color::MAGENTA << "╠" << std::string(termWidth - 2, '=') << "╣" << Color::RESET << std::endl;
+        std::cout << Colors::MAGENTA << "╔" << std::string(termWidth - 2, '=') << "╗" << Colors::RESET << std::endl;
+        std::cout << Colors::MAGENTA << "║" << Colors::RESET << " COMPOSITE FOODS " << std::string(termWidth - 18, ' ') << Colors::MAGENTA << "║" << Colors::RESET << std::endl;
+        std::cout << Colors::MAGENTA << "╠" << std::string(termWidth - 2, '=') << "╣" << Colors::RESET << std::endl;
         
-        std::cout << Color::WHITE << std::left << std::setw(25) << "ID" 
-                  << std::setw(10) << "CALORIES" << "KEYWORDS" << Color::RESET << std::endl;
-        std::cout << Color::MAGENTA << "╠" << std::string(termWidth - 2, '=') << "╣" << Color::RESET << std::endl;
+        std::cout << Colors::WHITE << std::left << std::setw(25) << "ID" 
+                  << std::setw(10) << "CALORIES" << "KEYWORDS" << Colors::RESET << std::endl;
+        std::cout << Colors::MAGENTA << "╠" << std::string(termWidth - 2, '=') << "╣" << Colors::RESET << std::endl;
         
         for (const auto& food : compositeFoods) {
             std::string keywordStr;
@@ -505,18 +505,18 @@ void CLI::displayFoodDatabaseView() const {
                 keywordStr = keywordStr.substr(0, 32) + "...";
             }
             
-            std::cout << Color::BLUE << std::left << std::setw(25) << food->getId()
-                      << Color::YELLOW << std::setw(10) << formatCalories(food->getCaloriesPerServing())
-                      << Color::DIM << keywordStr << Color::RESET << std::endl;
+            std::cout << Colors::BLUE << std::left << std::setw(25) << food->getId()
+                      << Colors::YELLOW << std::setw(10) << formatCalories(food->getCaloriesPerServing())
+                      << Colors::DIM << keywordStr << Colors::RESET << std::endl;
         }
-        std::cout << Color::MAGENTA << "╚" << std::string(termWidth - 2, '=') << "╝" << Color::RESET << std::endl;
+        std::cout << Colors::MAGENTA << "╚" << std::string(termWidth - 2, '=') << "╝" << Colors::RESET << std::endl;
     }
     
     std::cout << std::endl;
-    std::cout << "Use '" << Color::CYAN << "view-food <id>" << Color::RESET << "' to see food details" << std::endl;
-    std::cout << "Use '" << Color::CYAN << "add-basic-food" << Color::RESET << "' to add a new basic food" << std::endl;
-    std::cout << "Use '" << Color::CYAN << "create-composite" << Color::RESET << "' to create a composite food" << std::endl;
-    std::cout << "Use '" << Color::CYAN << "search-foods" << Color::RESET << "' to search for foods" << std::endl;
+    std::cout << "Use '" << Colors::CYAN << "view-food <id>" << Colors::RESET << "' to see food details" << std::endl;
+    std::cout << "Use '" << Colors::CYAN << "add-basic-food" << Colors::RESET << "' to add a new basic food" << std::endl;
+    std::cout << "Use '" << Colors::CYAN << "create-composite" << Colors::RESET << "' to create a composite food" << std::endl;
+    std::cout << "Use '" << Colors::CYAN << "search-foods" << Colors::RESET << "' to search for foods" << std::endl;
 }
 
 // More UI methods would follow...
@@ -980,10 +980,10 @@ void CLI::handleViewLogEntry(const std::vector<std::string>& args) {
               << std::endl;
     std::cout << std::string(50, '-') << std::endl;
     
-    for (const auto& foodTuple : foods) {
+    for (const auto& entry : foods) {
         // Unpack the tuple (Food, servings, mealType)
-        auto& food = std::get<0>(foodTuple);
-        double servings = std::get<1>(foodTuple);
+        auto& food = std::get<0>(entry);
+        double servings = std::get<1>(entry);
         // MealType mealType = std::get<2>(foodTuple); // If needed later
         
         double calories = food->getCaloriesPerServing() * servings;
@@ -1167,25 +1167,25 @@ void CLI::displayFoodDetailView(const std::string& foodId) const {
     
     auto food = foodDatabase->getFood(foodId);
     if (!food) {
-        std::cout << Color::RED << "Food not found with ID: " << foodId << Color::RESET << std::endl;
+        std::cout << Colors::RED << "Food not found with ID: " << foodId << Colors::RESET << std::endl;
         return;
     }
     
-    std::cout << Color::BLUE << "╔" << std::string(termWidth - 2, '=') << "╗" << Color::RESET << std::endl;
-    std::cout << Color::BLUE << "║" << Color::RESET << " " << Color::BOLD << "Food Details: " << food->getId() << Color::RESET << std::string(termWidth - 16 - food->getId().length(), ' ') << Color::BLUE << "║" << Color::RESET << std::endl;
-    std::cout << Color::BLUE << "╚" << std::string(termWidth - 2, '=') << "╝" << Color::RESET << std::endl;
+    std::cout << Colors::BLUE << "╔" << std::string(termWidth - 2, '=') << "╗" << Colors::RESET << std::endl;
+    std::cout << Colors::BLUE << "║" << Colors::RESET << " " << Colors::BOLD << "Food Details: " << food->getId() << Colors::RESET << std::string(termWidth - 16 - food->getId().length(), ' ') << Colors::BLUE << "║" << Colors::RESET << std::endl;
+    std::cout << Colors::BLUE << "╚" << std::string(termWidth - 2, '=') << "╝" << Colors::RESET << std::endl;
     
     // Basic info
     std::cout << std::endl;
-    std::cout << Color::CYAN << "Basic Information:" << Color::RESET << std::endl;
-    std::cout << "ID: " << Color::YELLOW << food->getId() << Color::RESET << std::endl;
-    std::cout << "Calories per serving: " << Color::GREEN << food->getCaloriesPerServing() << Color::RESET << std::endl;
+    std::cout << Colors::CYAN << "Basic Information:" << Colors::RESET << std::endl;
+    std::cout << "ID: " << Colors::YELLOW << food->getId() << Colors::RESET << std::endl;
+    std::cout << "Calories per serving: " << Colors::GREEN << food->getCaloriesPerServing() << Colors::RESET << std::endl;
     
     // Keywords
     std::cout << "Keywords: ";
     auto keywords = food->getKeywords();
     for (size_t i = 0; i < keywords.size(); i++) {
-        std::cout << Color::MAGENTA << keywords[i] << Color::RESET;
+        std::cout << Colors::MAGENTA << keywords[i] << Colors::RESET;
         if (i < keywords.size() - 1) {
             std::cout << ", ";
         }
@@ -1196,7 +1196,7 @@ void CLI::displayFoodDetailView(const std::string& foodId) const {
     auto compositeFood = std::dynamic_pointer_cast<CompositeFood>(food);
     if (compositeFood) {
         std::cout << std::endl;
-        std::cout << Color::CYAN << "Components:" << Color::RESET << std::endl;
+        std::cout << Colors::CYAN << "Components:" << Colors::RESET << std::endl;
         
         auto components = compositeFood->getComponents();
         if (components.empty()) {
@@ -1227,9 +1227,9 @@ void CLI::displayFoodDetailView(const std::string& foodId) const {
     }
     
     std::cout << std::endl;
-    std::cout << "Use '" << Color::CYAN << "add-food " << food->getId() << " <servings>" << Color::RESET 
+    std::cout << "Use '" << Colors::CYAN << "add-food " << food->getId() << " <servings>" << Colors::RESET 
              << "' to add this food to your log" << std::endl;
-    std::cout << "Use '" << Color::CYAN << "view food" << Color::RESET 
+    std::cout << "Use '" << Colors::CYAN << "view food" << Colors::RESET 
              << "' to return to food database" << std::endl;
 }
 
@@ -1242,20 +1242,22 @@ void CLI::displayLogEntryView() const {
     auto logEntry = logManager->getLogEntry(date);
     auto foods = logEntry->getConsumedFoods();
     
-    std::cout << Color::GREEN << "╔" << std::string(termWidth - 2, '=') << "╗" << Color::RESET << std::endl;
-    std::cout << Color::GREEN << "║" << Color::RESET << " Log for " << LogEntry::dateToString(date) << std::string(termWidth - 20 - LogEntry::dateToString(date).length(), ' ') << Color::GREEN << "║" << Color::RESET << std::endl;
-    std::cout << Color::GREEN << "╚" << std::string(termWidth - 2, '=') << "╝" << Color::RESET << std::endl;
+    std::cout << Colors::GREEN << "╔" << std::string(termWidth - 2, '=') << "╗" << Colors::RESET << std::endl;
+    std::cout << Colors::GREEN << "║" << Colors::RESET << " Log for " << LogEntry::dateToString(date) 
+              << std::string(termWidth - 20 - LogEntry::dateToString(date).length(), ' ') 
+              << Colors::GREEN << "║" << Colors::RESET << std::endl;
+    std::cout << Colors::GREEN << "╚" << std::string(termWidth - 2, '=') << "╝" << Colors::RESET << std::endl;
     
     if (foods.empty()) {
-        std::cout << Color::YELLOW << "No foods logged for this date." << Color::RESET << std::endl;
+        std::cout << Colors::WARNING << "No foods logged for this date." << Colors::RESET << std::endl;
     } else {
         double totalCalories = 0.0;
         
         // Display by meal type if available
-        std::map<MealType, std::vector<std::tuple<std::shared_ptr<Food>, double, MealType>>> foodsByMeal;
-        for (const auto& foodTuple : foods) {
-            MealType mealType = std::get<2>(foodTuple);
-            foodsByMeal[mealType].push_back(foodTuple);
+        std::map<MealType, std::vector<LogEntry::FoodEntry>> foodsByMeal;
+        for (const auto& entry : foods) {
+            MealType mealType = std::get<2>(entry);
+            foodsByMeal[mealType].push_back(entry);
         }
         
         // Define meal type order for display
@@ -1271,7 +1273,7 @@ void CLI::displayLogEntryView() const {
         for (const auto& mealType : mealOrder) {
             if (foodsByMeal.find(mealType) != foodsByMeal.end() && !foodsByMeal[mealType].empty()) {
                 std::cout << std::endl;
-                std::cout << Color::CYAN << "● " << LogEntry::mealTypeToString(mealType) << ":" << Color::RESET << std::endl;
+                std::cout << Colors::CYAN << "● " << LogEntry::mealTypeToString(mealType) << ":" << Colors::RESET << std::endl;
                 
                 // Table header
                 std::cout << std::left << std::setw(20) << "Food ID" 
@@ -1283,9 +1285,9 @@ void CLI::displayLogEntryView() const {
                 double mealCalories = 0.0;
                 
                 // Display foods for this meal
-                for (const auto& foodTuple : foodsByMeal[mealType]) {
-                    auto& food = std::get<0>(foodTuple);
-                    double servings = std::get<1>(foodTuple);
+                for (const auto& entry : foodsByMeal[mealType]) {
+                    auto& food = std::get<0>(entry);
+                    double servings = std::get<1>(entry);
                     
                     double calories = food->getCaloriesPerServing() * servings;
                     mealCalories += calories;
@@ -1305,7 +1307,7 @@ void CLI::displayLogEntryView() const {
         // Display total calories
         std::cout << std::endl;
         std::cout << std::left << std::setw(30) << "Total Calories:" 
-                  << Color::BOLD << totalCalories << Color::RESET << std::endl;
+                  << Colors::BOLD << totalCalories << Colors::RESET << std::endl;
         
         double targetCalories = logManager->getTargetCalories();
         double difference = targetCalories - totalCalories;
@@ -1316,19 +1318,19 @@ void CLI::displayLogEntryView() const {
         // Show remaining or excess calories
         if (difference >= 0) {
             std::cout << std::left << std::setw(30) << "Remaining:" 
-                      << Color::GREEN << difference << Color::RESET << std::endl;
+                      << Colors::GREEN << difference << Colors::RESET << std::endl;
         } else {
             std::cout << std::left << std::setw(30) << "Excess:" 
-                      << Color::RED << -difference << Color::RESET << std::endl;
+                      << Colors::RED << -difference << Colors::RESET << std::endl;
         }
     }
     
     std::cout << std::endl;
-    std::cout << "Use '" << Color::CYAN << "add-food <food_id> <servings>" << Color::RESET 
+    std::cout << "Use '" << Colors::CYAN << "add-food <food_id> <servings>" << Colors::RESET 
              << "' to add food to this log" << std::endl;
-    std::cout << "Use '" << Color::CYAN << "remove-food <food_id>" << Color::RESET 
+    std::cout << "Use '" << Colors::CYAN << "remove-food <food_id>" << Colors::RESET 
              << "' to remove food from this log" << std::endl;
-    std::cout << "Use '" << Color::CYAN << "set-date YYYY-MM-DD" << Color::RESET 
+    std::cout << "Use '" << Colors::CYAN << "set-date YYYY-MM-DD" << Colors::RESET 
              << "' to view a different date's log" << std::endl;
 }
 
@@ -1336,43 +1338,43 @@ void CLI::displayUserProfileView() const {
     displayHeader("USER PROFILE");
     
     if (!user) {
-        std::cout << Color::RED << "No user profile available." << Color::RESET << std::endl;
+        std::cout << Colors::RED << "No user profile available." << Colors::RESET << std::endl;
         return;
     }
     
-    std::cout << Color::YELLOW << "╔" << std::string(termWidth - 2, '=') << "╗" << Color::RESET << std::endl;
-    std::cout << Color::YELLOW << "║" << Color::RESET << " " << Color::BOLD << "User Information" << Color::RESET << std::string(termWidth - 19, ' ') << Color::YELLOW << "║" << Color::RESET << std::endl;
-    std::cout << Color::YELLOW << "╚" << std::string(termWidth - 2, '=') << "╝" << Color::RESET << std::endl;
+    std::cout << Colors::YELLOW << "╔" << std::string(termWidth - 2, '=') << "╗" << Colors::RESET << std::endl;
+    std::cout << Colors::YELLOW << "║" << Colors::RESET << " " << Colors::BOLD << "User Information" << Colors::RESET << std::string(termWidth - 19, ' ') << Colors::YELLOW << "║" << Colors::RESET << std::endl;
+    std::cout << Colors::YELLOW << "╚" << std::string(termWidth - 2, '=') << "╝" << Colors::RESET << std::endl;
     
     std::cout << std::endl;
-    std::cout << std::left << std::setw(20) << "Gender:" << Color::CYAN << User::genderToString(user->getGender()) << Color::RESET << std::endl;
-    std::cout << std::left << std::setw(20) << "Height:" << Color::CYAN << user->getHeightCm() << " cm" << Color::RESET << std::endl;
-    std::cout << std::left << std::setw(20) << "Age:" << Color::CYAN << user->getAge() << " years" << Color::RESET << std::endl;
-    std::cout << std::left << std::setw(20) << "Weight:" << Color::CYAN << user->getWeightKg() << " kg" << Color::RESET << std::endl;
-    std::cout << std::left << std::setw(20) << "Activity Level:" << Color::CYAN << User::activityLevelToString(user->getActivityLevel()) << Color::RESET << std::endl;
-    std::cout << std::left << std::setw(20) << "Calorie Method:" << Color::CYAN << User::calorieMethodToString(user->getCalorieMethod()) << Color::RESET << std::endl;
+    std::cout << std::left << std::setw(20) << "Gender:" << Colors::CYAN << User::genderToString(user->getGender()) << Colors::RESET << std::endl;
+    std::cout << std::left << std::setw(20) << "Height:" << Colors::CYAN << user->getHeightCm() << " cm" << Colors::RESET << std::endl;
+    std::cout << std::left << std::setw(20) << "Age:" << Colors::CYAN << user->getAge() << " years" << Colors::RESET << std::endl;
+    std::cout << std::left << std::setw(20) << "Weight:" << Colors::CYAN << user->getWeightKg() << " kg" << Colors::RESET << std::endl;
+    std::cout << std::left << std::setw(20) << "Activity Level:" << Colors::CYAN << User::activityLevelToString(user->getActivityLevel()) << Colors::RESET << std::endl;
+    std::cout << std::left << std::setw(20) << "Calorie Method:" << Colors::CYAN << User::calorieMethodToString(user->getCalorieMethod()) << Colors::RESET << std::endl;
     
     std::cout << std::endl;
-    std::cout << Color::GREEN << "╔" << std::string(termWidth - 2, '=') << "╗" << Color::RESET << std::endl;
-    std::cout << Color::GREEN << "║" << Color::RESET << " " << Color::BOLD << "Calorie Information" << Color::RESET << std::string(termWidth - 22, ' ') << Color::GREEN << "║" << Color::RESET << std::endl;
-    std::cout << Color::GREEN << "╚" << std::string(termWidth - 2, '=') << "╝" << Color::RESET << std::endl;
+    std::cout << Colors::GREEN << "╔" << std::string(termWidth - 2, '=') << "╗" << Colors::RESET << std::endl;
+    std::cout << Colors::GREEN << "║" << Colors::RESET << " " << Colors::BOLD << "Calorie Information" << Colors::RESET << std::string(termWidth - 22, ' ') << Colors::GREEN << "║" << Colors::RESET << std::endl;
+    std::cout << Colors::GREEN << "╚" << std::string(termWidth - 2, '=') << "╝" << Colors::RESET << std::endl;
     
     double targetCalories = user->calculateTargetCalories();
     double consumed = logManager->getConsumedCalories(logManager->getCurrentDate());
     double difference = targetCalories - consumed;
     
     std::cout << std::endl;
-    std::cout << std::left << std::setw(25) << "Target Daily Calories:" << Color::BOLD << targetCalories << Color::RESET << std::endl;
-    std::cout << std::left << std::setw(25) << "Consumed Today:" << Color::BOLD << consumed << Color::RESET << std::endl;
+    std::cout << std::left << std::setw(25) << "Target Daily Calories:" << Colors::BOLD << targetCalories << Colors::RESET << std::endl;
+    std::cout << std::left << std::setw(25) << "Consumed Today:" << Colors::BOLD << consumed << Colors::RESET << std::endl;
     
     if (difference >= 0) {
-        std::cout << std::left << std::setw(25) << "Remaining Calories:" << Color::GREEN << difference << Color::RESET << std::endl;
+        std::cout << std::left << std::setw(25) << "Remaining Calories:" << Colors::GREEN << difference << Colors::RESET << std::endl;
     } else {
-        std::cout << std::left << std::setw(25) << "Excess Calories:" << Color::RED << -difference << Color::RESET << std::endl;
+        std::cout << std::left << std::setw(25) << "Excess Calories:" << Colors::RED << -difference << Colors::RESET << std::endl;
     }
     
     std::cout << std::endl;
-    std::cout << "Use '" << Color::CYAN << "profile <attribute> <value>" << Color::RESET 
+    std::cout << "Use '" << Colors::CYAN << "profile <attribute> <value>" << Colors::RESET 
              << "' to update your profile" << std::endl;
     std::cout << "Attributes: gender, height, age, weight, activity, method" << std::endl;
 }

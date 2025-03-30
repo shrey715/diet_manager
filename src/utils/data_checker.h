@@ -6,8 +6,17 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 
+/**
+ * @namespace DataChecker
+ * @brief Utilities for checking and fixing data files
+ */
 namespace DataChecker {
-    // Check if file exists and contains valid JSON
+    /**
+     * @brief Check if a JSON file is valid and create it if needed
+     * @param filePath Path to the file
+     * @param createIfMissing Whether to create the file if missing
+     * @return True if file is valid or was created successfully
+     */
     inline bool isValidJsonFile(const std::string& filePath, bool createIfMissing = true) {
         std::ifstream file(filePath);
         if (!file.is_open()) {
@@ -16,63 +25,67 @@ namespace DataChecker {
             if (createIfMissing) {
                 std::ofstream newFile(filePath);
                 if (newFile.is_open()) {
-                    newFile << "[]";  // Write an empty JSON array
+                    newFile << "[]";  // Create empty JSON array
                     newFile.close();
-                    std::cerr << "Created new empty JSON file: " << filePath << std::endl;
+                    std::cerr << "Created new JSON file: " << filePath << std::endl;
                     return true;
-                } else {
-                    std::cerr << "Error: Could not create file: " << filePath << std::endl;
-                    return false;
                 }
+                std::cerr << "Error: Could not create file: " << filePath << std::endl;
             }
-            
             return false;
         }
         
         try {
-            std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+            std::string content((std::istreambuf_iterator<char>(file)), 
+                               std::istreambuf_iterator<char>());
             file.close();
             
             if (content.empty()) {
-                // Empty file - replace with valid JSON
+                // Fix empty file
                 std::ofstream newFile(filePath);
                 if (newFile.is_open()) {
-                    newFile << "[]";  // Write an empty JSON array
+                    newFile << "[]";
                     newFile.close();
-                    std::cerr << "File was empty. Replaced with empty JSON array: " << filePath << std::endl;
+                    std::cerr << "Fixed empty file: " << filePath << std::endl;
                 }
                 return true;
             }
             
-            // Test if it can be parsed (and store the result to avoid the warning)
-            auto parsedJson = nlohmann::json::parse(content);
+            // Test parsing (store result to avoid warning)
+            auto parsed = nlohmann::json::parse(content);
             return true;
         } catch (const std::exception& e) {
-            std::cerr << "Error: Invalid JSON in file " << filePath << ": " << e.what() << std::endl;
+            std::cerr << "Error: Invalid JSON in " << filePath << ": " << e.what() << std::endl;
             
             if (createIfMissing) {
+                // Replace corrupted file
                 std::ofstream newFile(filePath);
                 if (newFile.is_open()) {
-                    newFile << "[]";  // Write an empty JSON array
+                    newFile << "[]";
                     newFile.close();
-                    std::cerr << "Replaced corrupted file with empty JSON array: " << filePath << std::endl;
+                    std::cerr << "Replaced corrupted file: " << filePath << std::endl;
                     return true;
                 }
             }
-            
             return false;
         }
     }
     
-    // Fix all data files
-    inline void checkAndFixDataFiles(const std::string& basicFoodPath, 
-                                    const std::string& compositeFoodPath,
-                                    const std::string& logPath,
-                                    const std::string& userPath) {
+    /**
+     * @brief Check and fix all data files
+     * @param basicFoodPath Path to basic food database
+     * @param compositeFoodPath Path to composite food database
+     * @param logPath Path to log database
+     * @param userPath Path to user profile
+     */
+    inline void checkDataFiles(const std::string& basicFoodPath, 
+                              const std::string& compositeFoodPath,
+                              const std::string& logPath,
+                              const std::string& userPath) {
         isValidJsonFile(basicFoodPath);
         isValidJsonFile(compositeFoodPath);
         isValidJsonFile(logPath);
-        isValidJsonFile(userPath, false);  // Don't create user file automatically
+        isValidJsonFile(userPath, false); // Don't auto-create user file
     }
 }
 

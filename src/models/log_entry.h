@@ -9,7 +9,10 @@
 #include <tuple>
 #include "composite_food.h"
 
-// Meal types
+/**
+ * @enum MealType
+ * @brief Categories of meals for food log entries
+ */
 enum class MealType {
     BREAKFAST,
     LUNCH,
@@ -18,34 +21,68 @@ enum class MealType {
     OTHER
 };
 
+/**
+ * @class LogEntry
+ * @brief Represents a single day's food log
+ */
 class LogEntry {
+public:
+    /**
+     * @brief Type definition for a food entry
+     */
+    using FoodEntry = std::tuple<std::shared_ptr<Food>, double, MealType>;
+    
 private:
     std::string id;
     std::chrono::system_clock::time_point date;
-    // Store food, servings, and meal type
-    std::vector<std::tuple<std::shared_ptr<Food>, double, MealType>> consumedFoods;
+    std::vector<FoodEntry> consumedFoods;
     
 public:
+    /**
+     * @brief Default constructor - creates log for current date
+     */
     LogEntry();
+    
+    /**
+     * @brief Constructor with ID and date
+     */
     LogEntry(const std::string& id, const std::chrono::system_clock::time_point& date);
     
-    // Getters
+    // Basic getters & setters
     std::string getId() const;
     std::chrono::system_clock::time_point getDate() const;
-    const std::vector<std::tuple<std::shared_ptr<Food>, double, MealType>>& getConsumedFoods() const;
-    
-    // Setters
+    const std::vector<FoodEntry>& getConsumedFoods() const;
     void setId(const std::string& id);
     void setDate(const std::chrono::system_clock::time_point& date);
     
-    // Food management
+    /**
+     * @brief Add food to this log entry
+     */
     void addFood(std::shared_ptr<Food> food, double servings, MealType mealType = MealType::OTHER);
+    
+    /**
+     * @brief Remove food from this log entry by ID
+     */
     void removeFood(const std::string& foodId);
+    
+    /**
+     * @brief Update meal type for a specific food
+     */
     void updateFoodMealType(const std::string& foodId, MealType mealType);
     
-    // Calculations
+    /**
+     * @brief Get total calories in this log entry
+     */
     double getTotalCalories() const;
+    
+    /**
+     * @brief Get calories for a specific meal type
+     */
     double getCaloriesForMeal(MealType mealType) const;
+    
+    /**
+     * @brief Get calories organized by meal type
+     */
     std::map<MealType, double> getCaloriesByMealType() const;
     
     // Serialization
