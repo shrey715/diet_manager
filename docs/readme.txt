@@ -1,7 +1,5 @@
 # Diet Manager
 
-A simple command-line application to track food consumption and manage dietary goals.
-
 ## Features
 
 - Maintain a database of basic food items with nutritional information
@@ -88,38 +86,3 @@ The application uses JSON files to store data:
 - `logs.json` - Daily food consumption logs
 - `user.json` - User profile information
 
-## Example
-
-```
-> add-basic-food apple 95 fruit sweet
-Food 'apple' added successfully.
-
-> add-food apple 2
-Added 2 serving(s) of 'apple' (190 calories) to the log.
-
-> calories
-Calorie Summary for 2023-04-01:
-Consumed Calories: 190
-Target Calories: 2500
-Difference: -2310 (Under target)
-```
-
-## Design Features
-
-### Extensibility
-
-1. **New Calorie Calculation Methods:** The system is designed to easily incorporate new methods for calculating target calories by simply adding a new calculation method to the User class and extending the CalorieCalculationMethod enum.
-
-2. **External Food Data Sources:** The FoodDatabase class includes a plugin architecture allowing new food data sources to be registered using the registerFoodDataSource method, enabling the application to import food data from external sources like restaurant websites or nutritional databases.
-
-3. **Command Pattern for Logs:** Log operations use the Command pattern to enable unlimited undo/redo functionality while keeping a single source of truth for data.
-
-### Efficiency
-
-1. **Shared Food References:** The system uses shared pointers to food objects, ensuring that multiple references to the same food don't duplicate memory.
-
-2. **Composite Pattern for Foods:** The application implements the Composite pattern for food items, allowing complex foods to be built from simpler ones while maintaining a consistent interface.
-
-## Notes
-
-This is an academic project built as a prototype. Some features may not be fully implemented or tested.
