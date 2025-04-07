@@ -2,101 +2,108 @@
 #define LOG_ENTRY_H
 
 #include <string>
-#include <vector>
-#include <memory>
 #include <map>
+#include <vector>
 #include <chrono>
-#include <tuple>
-#include "composite_food.h"
+#include <nlohmann/json.hpp>
+
+using namespace std;
+using json = nlohmann::json;
 
 /**
- * @enum MealType
- * @brief Categories of meals for food log entries
- */
-enum class MealType {
-    BREAKFAST,
-    LUNCH,
-    DINNER,
-    SNACK,
-    OTHER
-};
-
-/**
- * @class LogEntry
- * @brief Represents a single day's food log
+ * LogEntry Class
+ * This class represents a single log entry for food consumption on a specific date.
  */
 class LogEntry {
 public:
-    /**
-     * @brief Type definition for a food entry
-     */
-    using FoodEntry = std::tuple<std::shared_ptr<Food>, double, MealType>;
+    // Constructor
+    LogEntry(const string& date = "");
     
-private:
-    std::string id;
-    std::chrono::system_clock::time_point date;
-    std::vector<FoodEntry> consumedFoods;
-    
-public:
-    /**
-     * @brief Default constructor - creates log for current date
-     */
-    LogEntry();
-    
-    /**
-     * @brief Constructor with ID and date
-     */
-    LogEntry(const std::string& id, const std::chrono::system_clock::time_point& date);
-    
-    // Basic getters & setters
-    std::string getId() const;
-    std::chrono::system_clock::time_point getDate() const;
-    const std::vector<FoodEntry>& getConsumedFoods() const;
-    void setId(const std::string& id);
-    void setDate(const std::chrono::system_clock::time_point& date);
-    
-    /**
-     * @brief Add food to this log entry
-     */
-    void addFood(std::shared_ptr<Food> food, double servings, MealType mealType = MealType::OTHER);
-    
-    /**
-     * @brief Remove food from this log entry by ID
-     */
-    void removeFood(const std::string& foodId);
-    
-    /**
-     * @brief Update meal type for a specific food
-     */
-    void updateFoodMealType(const std::string& foodId, MealType mealType);
-    
-    /**
-     * @brief Get total calories in this log entry
-     */
-    double getTotalCalories() const;
-    
-    /**
-     * @brief Get calories for a specific meal type
-     */
-    double getCaloriesForMeal(MealType mealType) const;
-    
-    /**
-     * @brief Get calories organized by meal type
-     */
-    std::map<MealType, double> getCaloriesByMealType() const;
+    // Methods
+    void addFood(const string& foodId, float servings);
+    void removeFood(const string& foodId);
+    map<string, float> getFoods() const;
+    string getDate() const;
+    void setDate(const string& date);
     
     // Serialization
-    void toJson(std::ostream& os) const;
-    static std::shared_ptr<LogEntry> fromJson(
-        const std::string& json, 
-        const std::map<std::string, std::shared_ptr<Food>>& foodDatabase);
+    json toJson() const;
+    static LogEntry fromJson(const json& j);
+
+private:
+    string date;
+    map<string, float> foods; // foodId -> servings
+};
+
+/**
+ * LogHistory Class
+ * This class manages the history of log entries and provides undo/redo functionality.
+ */
+class LogHistory {
+public:
+    // Constructor
+    LogHistory();
     
-    // Utility methods
-    static std::string generateId();
-    static std::string dateToString(const std::chrono::system_clock::time_point& date);
-    static std::chrono::system_clock::time_point stringToDate(const std::string& dateStr);
-    static std::string mealTypeToString(MealType mealType);
-    static MealType mealTypeFromString(const std::string& mealTypeStr);
+    // Log entry methods
+    LogEntry* getCurrentLog();
+    LogEntry* getLog(const string& date);
+    void setCurrentDate(const string& date);
+    string getCurrentDate() const;
+    vector<string> getAvailableDates() const;
+    
+    // Command methods
+    void executeCommand(const string& command, const map<string, string>& params);
+    bool canUndo() const;
+    bool canRedo() const;
+    void undo();
+    void redo();
+    
+    // Serialization
+    json toJson() const;
+    void fromJson(const json& j);
+
+private:
+    map<string, LogEntry> logs;
+    string currentDate;
+    
+    // Command history for undo/redo
+    class Command {
+    public:
+        virtual ~Command() = default;
+        virtual void execute() = 0;
+        virtual void unexecute() = 0;
+        virtual string toString() const = 0;
+    };
+    
+    class AddFoodCommand : public Command {
+    public:
+        AddFoodCommand(LogEntry* log, const string& foodId, float servings);
+        void execute() override;
+        void unexecute() override;
+        string toString() const override;
+    private:
+        LogEntry* log;
+        string foodId;
+        float servings;
+    };
+    
+    class RemoveFoodCommand : public Command {
+    public:
+        RemoveFoodCommand(LogEntry* log, const string& foodId, float servings);
+        void execute() override;
+        void unexecute() override;
+        string toString() const override;
+    private:
+        LogEntry* log;
+        string foodId;
+        float servings;
+    };
+    
+    vector<unique_ptr<Command>> commandHistory;
+    size_t currentCommandIndex;
+    
+    string getCurrentDateString() const;
+    void addCommand(unique_ptr<Command> command);
 };
 
 #endif // LOG_ENTRY_H

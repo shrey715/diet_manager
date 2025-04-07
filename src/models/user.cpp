@@ -1,309 +1,435 @@
 #include "user.h"
-#include <nlohmann/json.hpp>
-#include <iostream>
-#include <cmath> // for rounding calories
 
-using json = nlohmann::json;
-
-// Static map of calorie calculation methods
-// Different equations give different results, so user can choose
-std::map<CalorieCalculationMethod, User::CalorieCalculationFunc> User::calculationMethods = {
-    {CalorieCalculationMethod::HARRIS_BENEDICT, &User::calculateHarrisBenedict},
-    {CalorieCalculationMethod::MIFFLIN_ST_JEOR, &User::calculateMifflinStJeor}
-};
-
-// Default constructor with some reasonable values
-// Nobody will ever use these values but we need defaults
-User::User() 
-    : gender(Gender::OTHER), 
-      heightCm(170.0),  // average human height, more or less
-      age(30),          // not too old, not too young
-      weightKg(70.0),   // average weight, I think?
-      activityLevel(ActivityLevel::MODERATE), // most people are moderate, right?
-      calorieMethod(CalorieCalculationMethod::HARRIS_BENEDICT) {
-    // nothing else to initialize
+/**
+ * User Class Constructor
+ * @param name The name of the user
+ * @param age The age of the user in years
+ * @param gender The gender of the user
+ * @param height The height of the user in cm
+ * @param weight The weight of the user in kg
+ * @param activity The activity level of the user
+ * @param goal The weight goal of the user
+ * @param calcMethod The calorie calculation method to use
+ * This constructor initializes the User object with personal information.
+ */
+User::User(const string& name, int age, Gender gender, float height, 
+           float weight, ActivityLevel activity, Goal goal, CalorieCalculationMethod calcMethod)
+    : name(name), age(age), gender(gender), height(height), 
+      weight(weight), activityLevel(activity), goal(goal), calorieCalcMethod(calcMethod) {
 }
 
-// Constructor with all parameters for when we know all the details
-User::User(Gender gender, double heightCm, int age, double weightKg, 
-           ActivityLevel activityLevel, CalorieCalculationMethod method)
-    : gender(gender), 
-      heightCm(heightCm), 
-      age(age), 
-      weightKg(weightKg), 
-      activityLevel(activityLevel),
-      calorieMethod(method) {
-    
-    // Sanity check values
-    if (heightCm <= 0) {
-        std::cerr << "Invalid height, using default 170cm" << std::endl;
-        this->heightCm = 170.0;
-    }
-    
-    if (age <= 0 || age > 120) {
-        std::cerr << "Invalid age, using default 30" << std::endl;
-        this->age = 30;
-    }
-    
-    if (weightKg <= 0) {
-        std::cerr << "Invalid weight, using default 70kg" << std::endl;
-        this->weightKg = 70.0;
-    }
+/**
+ * getName Method
+ * @return The name of the user
+ */
+const string& User::getName() const {
+    return name;
 }
 
-// Getters - nothing exciting here
-Gender User::getGender() const {
-    return gender;
-}
-
-double User::getHeightCm() const {
-    return heightCm;
-}
-
+/**
+ * getAge Method
+ * @return The age of the user
+ */
 int User::getAge() const {
     return age;
 }
 
-double User::getWeightKg() const {
-    return weightKg;
+/**
+ * getGender Method
+ * @return The gender of the user
+ */
+User::Gender User::getGender() const {
+    return gender;
 }
 
-ActivityLevel User::getActivityLevel() const {
+/**
+ * getHeight Method
+ * @return The height of the user in cm
+ */
+float User::getHeight() const {
+    return height;
+}
+
+/**
+ * getWeight Method
+ * @return The weight of the user in kg
+ */
+float User::getWeight() const {
+    return weight;
+}
+
+/**
+ * getActivityLevel Method
+ * @return The activity level of the user
+ */
+User::ActivityLevel User::getActivityLevel() const {
     return activityLevel;
 }
 
-CalorieCalculationMethod User::getCalorieMethod() const {
-    return calorieMethod;
+/**
+ * getGoal Method
+ * @return The weight goal of the user
+ */
+User::Goal User::getGoal() const {
+    return goal;
 }
 
-// Setters with validation
+/**
+ * getCalorieCalculationMethod Method
+ * @return The calorie calculation method used for this user
+ */
+User::CalorieCalculationMethod User::getCalorieCalculationMethod() const {
+    return calorieCalcMethod;
+}
+
+/**
+ * setName Method
+ * @param name The new name of the user
+ */
+void User::setName(const string& name) {
+    this->name = name;
+}
+
+/**
+ * setAge Method
+ * @param age The new age of the user
+ */
+void User::setAge(int age) {
+    this->age = age;
+}
+
+/**
+ * setGender Method
+ * @param gender The new gender of the user
+ */
 void User::setGender(Gender gender) {
     this->gender = gender;
 }
 
-void User::setHeightCm(double heightCm) {
-    if (heightCm <= 0) {
-        std::cerr << "Warning: Invalid height " << heightCm << ". Using previous value." << std::endl;
-        return;
-    }
-    this->heightCm = heightCm;
+/**
+ * setHeight Method
+ * @param height The new height of the user in cm
+ */
+void User::setHeight(float height) {
+    this->height = height;
 }
 
-void User::setAge(int age) {
-    if (age <= 0 || age > 120) {
-        std::cerr << "Warning: Invalid age " << age << ". Using previous value." << std::endl;
-        return;
-    }
-    this->age = age;
+/**
+ * setWeight Method
+ * @param weight The new weight of the user in kg
+ */
+void User::setWeight(float weight) {
+    this->weight = weight;
 }
 
-void User::setWeightKg(double weightKg) {
-    if (weightKg <= 0) {
-        std::cerr << "Warning: Invalid weight " << weightKg << ". Using previous value." << std::endl;
-        return;
-    }
-    this->weightKg = weightKg;
+/**
+ * setActivityLevel Method
+ * @param activity The new activity level of the user
+ */
+void User::setActivityLevel(ActivityLevel activity) {
+    this->activityLevel = activity;
 }
 
-void User::setActivityLevel(ActivityLevel level) {
-    this->activityLevel = level;
+/**
+ * setGoal Method
+ * @param goal The new weight goal of the user
+ */
+void User::setGoal(Goal goal) {
+    this->goal = goal;
 }
 
-void User::setCalorieMethod(CalorieCalculationMethod method) {
-    this->calorieMethod = method;
+/**
+ * setCalorieCalculationMethod Method
+ * @param method The new calorie calculation method to use
+ */
+void User::setCalorieCalculationMethod(CalorieCalculationMethod method) {
+    this->calorieCalcMethod = method;
 }
 
-// Calculate target calories based on the selected method
-double User::calculateTargetCalories() const {
-    if (calculationMethods.find(calorieMethod) != calculationMethods.end()) {
-        // Round to nearest whole calorie because decimal calories are stupid
-        double result = calculationMethods[calorieMethod](*this);
-        return std::round(result);
-    }
-    
-    // Default to Harris-Benedict if method not found (shouldn't happen)
-    std::cerr << "Warning: Unknown calorie calculation method. Using Harris-Benedict." << std::endl;
-    return std::round(calculateHarrisBenedict(*this));
+/**
+ * calculateBMI Method
+ * @return The body mass index (BMI) of the user
+ * This method calculates the BMI based on weight (kg) and height (cm).
+ */
+float User::calculateBMI() const {
+    if (height <= 0) return 0;
+    float heightInMeters = height / 100.0f;
+    return weight / (heightInMeters * heightInMeters);
 }
 
-// Implementation of Harris-Benedict equation
-// Looked this up on Wikipedia at 2am, hope it's right
-double User::calculateHarrisBenedict(const User& user) {
-    double bmr = 0.0;
-    
-    if (user.gender == Gender::MALE) {
-        bmr = 88.362 + (13.397 * user.weightKg) + (4.799 * user.heightCm) - (5.677 * user.age);
-    } else {
-        // female and other both use female equation
-        bmr = 447.593 + (9.247 * user.weightKg) + (3.098 * user.heightCm) - (4.330 * user.age);
-    }
-    
-    // Apply activity multiplier
-    double activityMultiplier = 1.2; // Default sedentary
-    switch (user.activityLevel) {
-        case ActivityLevel::SEDENTARY: activityMultiplier = 1.2; break;
-        case ActivityLevel::LIGHT: activityMultiplier = 1.375; break;
-        case ActivityLevel::MODERATE: activityMultiplier = 1.55; break;
-        case ActivityLevel::ACTIVE: activityMultiplier = 1.725; break;
-        case ActivityLevel::VERY_ACTIVE: activityMultiplier = 1.9; break;
-        default: 
-            std::cerr << "Unknown activity level, using sedentary" << std::endl;
-            activityMultiplier = 1.2;
-    }
-    
-    return bmr * activityMultiplier;
-}
-
-// Implementation of Mifflin-St Jeor equation
-// Another equation that does basically the same thing
-double User::calculateMifflinStJeor(const User& user) {
-    double bmr = 0.0;
-    
-    if (user.gender == Gender::MALE) {
-        bmr = (10 * user.weightKg) + (6.25 * user.heightCm) - (5 * user.age) + 5;
-    } else {
-        // female and other both use female equation
-        bmr = (10 * user.weightKg) + (6.25 * user.heightCm) - (5 * user.age) - 161;
-    }
-    
-    // Apply activity multiplier
-    double activityMultiplier = 1.2; // Default sedentary
-    switch (user.activityLevel) {
-        case ActivityLevel::SEDENTARY: activityMultiplier = 1.2; break;
-        case ActivityLevel::LIGHT: activityMultiplier = 1.375; break;
-        case ActivityLevel::MODERATE: activityMultiplier = 1.55; break;
-        case ActivityLevel::ACTIVE: activityMultiplier = 1.725; break;
-        case ActivityLevel::VERY_ACTIVE: activityMultiplier = 1.9; break;
+/**
+ * calculateBMR Method
+ * @return The basal metabolic rate (BMR) of the user in calories
+ * This method calculates the BMR using the appropriate method based on user preference.
+ */
+float User::calculateBMR() const {
+    switch (calorieCalcMethod) {
+        case CalorieCalculationMethod::HARRIS_BENEDICT:
+            return calculateBMRHarrisBenedict();
+        case CalorieCalculationMethod::WHO_EQUATION:
+            return calculateBMRWHOEquation();
+        case CalorieCalculationMethod::MIFFLIN_ST_JEOR:
         default:
-            std::cerr << "Unknown activity level, using sedentary" << std::endl;
-            activityMultiplier = 1.2;
+            // Use Mifflin-St Jeor as default (already implemented)
+            if (gender == Gender::MALE) {
+                return (10.0f * weight) + (6.25f * height) - (5.0f * age) + 5.0f;
+            } else {
+                return (10.0f * weight) + (6.25f * height) - (5.0f * age) - 161.0f;
+            }
     }
-    
-    return bmr * activityMultiplier;
 }
 
-// Serialize to JSON
-void User::toJson(std::ostream& os) const {
+/**
+ * calculateBMRHarrisBenedict Method
+ * @return The BMR using the Harris-Benedict equation
+ * This method calculates BMR using the revised Harris-Benedict equation (1984)
+ */
+float User::calculateBMRHarrisBenedict() const {
+    if (gender == Gender::MALE) {
+        // Male: BMR = 88.362 + (13.397 × weight in kg) + (4.799 × height in cm) - (5.677 × age in years)
+        return 88.362f + (13.397f * weight) + (4.799f * height) - (5.677f * age);
+    } else {
+        // Female: BMR = 447.593 + (9.247 × weight in kg) + (3.098 × height in cm) - (4.330 × age in years)
+        return 447.593f + (9.247f * weight) + (3.098f * height) - (4.330f * age);
+    }
+}
+
+/**
+ * calculateBMRWHOEquation Method
+ * @return The BMR using the WHO equation
+ * This method calculates BMR using the World Health Organization (WHO) equations
+ */
+float User::calculateBMRWHOEquation() const {
+    if (gender == Gender::MALE) {
+        // WHO equations for males based on age ranges
+        if (age < 3) {
+            return (60.9f * weight) - 54;
+        } else if (age < 10) {
+            return (22.7f * weight) + 495;
+        } else if (age < 18) {
+            return (17.5f * weight) + 651;
+        } else if (age < 30) {
+            return (15.3f * weight) + 679;
+        } else if (age < 60) {
+            return (11.6f * weight) + 879;
+        } else {
+            return (13.5f * weight) + 487;
+        }
+    } else {
+        // WHO equations for females based on age ranges
+        if (age < 3) {
+            return (61.0f * weight) - 51;
+        } else if (age < 10) {
+            return (22.5f * weight) + 499;
+        } else if (age < 18) {
+            return (12.2f * weight) + 746;
+        } else if (age < 30) {
+            return (14.7f * weight) + 496;
+        } else if (age < 60) {
+            return (8.7f * weight) + 829;
+        } else {
+            return (10.5f * weight) + 596;
+        }
+    }
+}
+
+/**
+ * getActivityMultiplier Method
+ * @return The activity multiplier based on the user's activity level
+ * This method returns a multiplier to adjust calorie needs based on activity level.
+ * Source for multipliers: https://mohap.gov.ae/en/awareness-centre/daily-calorie-requirements-calculator#:~:text=If%20you%20are%20lightly%20active,Calorie%2DCalculation%20%3D%20BMR%20x%201.725
+ */
+float User::getActivityMultiplier() const {
+    switch (activityLevel) {
+        case ActivityLevel::SEDENTARY:
+            return 1.2f;
+        case ActivityLevel::LIGHT:
+            return 1.375f;
+        case ActivityLevel::MODERATE:
+            return 1.55f;
+        case ActivityLevel::ACTIVE:
+            return 1.725f;
+        case ActivityLevel::VERY_ACTIVE:
+            return 1.9f;
+        default:
+            return 1.55f;
+    }
+}
+
+/**
+ * getGoalCalorieAdjustment Method
+ * @return The calorie adjustment based on the user's weight goal
+ * This method returns a calorie adjustment factor for weight goals.
+ */
+float User::getGoalCalorieAdjustment() const {
+    switch (goal) {
+        case Goal::LOSE_WEIGHT:
+            return -500.0f; // Deficit for weight loss
+        case Goal::GAIN_WEIGHT:
+            return 500.0f;  // Surplus for weight gain
+        case Goal::MAINTAIN:
+        default:
+            return 0.0f;    // No adjustment for maintenance
+    }
+}
+
+/**
+ * calculateDailyCalorieNeeds Method
+ * @return The daily calorie needs of the user based on BMR and activity level
+ * This method calculates the total daily energy expenditure.
+ */
+float User::calculateDailyCalorieNeeds() const {
+    return calculateBMR() * getActivityMultiplier();
+}
+
+/**
+ * calculateTargetCalories Method
+ * @return The target daily calorie intake based on needs and goals
+ * This method calculates the recommended calorie intake according to the user's goal.
+ */
+float User::calculateTargetCalories() const {
+    return calculateDailyCalorieNeeds() + getGoalCalorieAdjustment();
+}
+
+/**
+ * toJson Method
+ * @return A JSON object representing the user
+ * This method serializes the User object to JSON.
+ */
+json User::toJson() const {
     json j;
-    j["gender"] = genderToString(gender);
-    j["height_cm"] = heightCm;
+    j["name"] = name;
     j["age"] = age;
-    j["weight_kg"] = weightKg;
-    j["activity_level"] = activityLevelToString(activityLevel);
-    j["calorie_method"] = calorieMethodToString(calorieMethod);
-    
-    os << j.dump(4);
+    j["gender"] = static_cast<int>(gender);
+    j["height"] = height;
+    j["weight"] = weight;
+    j["activityLevel"] = static_cast<int>(activityLevel);
+    j["goal"] = static_cast<int>(goal);
+    j["calorieCalcMethod"] = static_cast<int>(calorieCalcMethod);
+    return j;
 }
 
-// Create User from JSON string
-User User::fromJson(const std::string& jsonString) {
-    try {
-        json j = json::parse(jsonString);
-        
-        User user;
-        
-        // Check for required fields
-        if (j.contains("gender")) {
-            user.setGender(genderFromString(j["gender"]));
-        }
-        
-        if (j.contains("height_cm")) {
-            user.setHeightCm(j["height_cm"]);
-        }
-        
-        if (j.contains("age")) {
-            user.setAge(j["age"]);
-        }
-        
-        if (j.contains("weight_kg")) {
-            user.setWeightKg(j["weight_kg"]);
-        }
-        
-        if (j.contains("activity_level")) {
-            user.setActivityLevel(activityLevelFromString(j["activity_level"]));
-        }
-        
-        if (j.contains("calorie_method")) {
-            user.setCalorieMethod(calorieMethodFromString(j["calorie_method"]));
-        }
-        
-        return user;
-    } catch (const std::exception& e) {
-        std::cerr << "Error parsing user from JSON: " << e.what() << std::endl;
-        std::cerr << "Creating default user instead" << std::endl;
-        return User(); // Return default user on error
-    }
+/**
+ * fromJson Method
+ * @param j A JSON object representing a user
+ * @return A User object deserialized from the JSON
+ * This static method deserializes a User object from JSON.
+ */
+User User::fromJson(const json& j) {
+    User user;
+    if (j.contains("name")) user.name = j["name"];
+    if (j.contains("age")) user.age = j["age"];
+    if (j.contains("gender")) user.gender = static_cast<Gender>(j["gender"].get<int>());
+    if (j.contains("height")) user.height = j["height"];
+    if (j.contains("weight")) user.weight = j["weight"];
+    if (j.contains("activityLevel")) user.activityLevel = static_cast<ActivityLevel>(j["activityLevel"].get<int>());
+    if (j.contains("goal")) user.goal = static_cast<Goal>(j["goal"].get<int>());
+    if (j.contains("calorieCalcMethod")) user.calorieCalcMethod = static_cast<CalorieCalculationMethod>(j["calorieCalcMethod"].get<int>());
+    return user;
 }
 
-// Convert enum to string for serialization
-std::string User::genderToString(Gender gender) {
-    switch (gender) {
-        case Gender::MALE: return "male";
-        case Gender::FEMALE: return "female";
-        case Gender::OTHER: return "other";
-        default: return "unknown";
-    }
-}
-
-// Parse string to gender enum
-Gender User::genderFromString(const std::string& genderStr) {
-    std::string lowercase = genderStr;
-    std::transform(lowercase.begin(), lowercase.end(), lowercase.begin(), 
-                   [](unsigned char c){ return std::tolower(c); });
-    
-    if (lowercase == "male" || lowercase == "m") return Gender::MALE;
-    if (lowercase == "female" || lowercase == "f") return Gender::FEMALE;
-    return Gender::OTHER;
-}
-
-// Convert activity level to string
-std::string User::activityLevelToString(ActivityLevel level) {
+/**
+ * activityLevelToString Method
+ * @param level The activity level enum
+ * @return String representation of the activity level
+ */
+string User::activityLevelToString(ActivityLevel level) {
     switch (level) {
-        case ActivityLevel::SEDENTARY: return "sedentary";
-        case ActivityLevel::LIGHT: return "light";
-        case ActivityLevel::MODERATE: return "moderate";
-        case ActivityLevel::ACTIVE: return "active";
-        case ActivityLevel::VERY_ACTIVE: return "very_active";
-        default: return "unknown";
+        case ActivityLevel::SEDENTARY: return "Sedentary";
+        case ActivityLevel::LIGHT: return "Lightly Active";
+        case ActivityLevel::MODERATE: return "Moderately Active";
+        case ActivityLevel::ACTIVE: return "Active";
+        case ActivityLevel::VERY_ACTIVE: return "Very Active";
+        default: return "Unknown";
     }
 }
 
-// Parse string to activity level enum
-ActivityLevel User::activityLevelFromString(const std::string& levelStr) {
-    std::string lowercase = levelStr;
-    std::transform(lowercase.begin(), lowercase.end(), lowercase.begin(), 
-                   [](unsigned char c){ return std::tolower(c); });
-    
-    if (lowercase == "sedentary" || lowercase == "none") return ActivityLevel::SEDENTARY;
-    if (lowercase == "light" || lowercase == "low") return ActivityLevel::LIGHT;
-    if (lowercase == "moderate" || lowercase == "medium" || lowercase == "mod") return ActivityLevel::MODERATE;
-    if (lowercase == "active" || lowercase == "high") return ActivityLevel::ACTIVE;
-    if (lowercase == "very_active" || lowercase == "very active" || lowercase == "intense") return ActivityLevel::VERY_ACTIVE;
-    
-    std::cerr << "Unknown activity level '" << levelStr << "', using moderate" << std::endl;
-    return ActivityLevel::MODERATE; // Default if not recognized
+/**
+ * goalToString Method
+ * @param goal The goal enum
+ * @return String representation of the goal
+ */
+string User::goalToString(Goal goal) {
+    switch (goal) {
+        case Goal::LOSE_WEIGHT: return "Lose Weight";
+        case Goal::MAINTAIN: return "Maintain Weight";
+        case Goal::GAIN_WEIGHT: return "Gain Weight";
+        default: return "Unknown";
+    }
 }
 
-// Convert calorie method to string
-std::string User::calorieMethodToString(CalorieCalculationMethod method) {
+/**
+ * genderToString Method
+ * @param gender The gender enum
+ * @return String representation of the gender
+ */
+string User::genderToString(Gender gender) {
+    switch (gender) {
+        case Gender::MALE: return "Male";
+        case Gender::FEMALE: return "Female";
+        case Gender::OTHER: return "Other";
+        default: return "Unknown";
+    }
+}
+
+/**
+ * calorieMethodToString Method
+ * @param method The calorie calculation method enum
+ * @return String representation of the method
+ */
+string User::calorieMethodToString(CalorieCalculationMethod method) {
     switch (method) {
-        case CalorieCalculationMethod::HARRIS_BENEDICT: return "harris_benedict";
-        case CalorieCalculationMethod::MIFFLIN_ST_JEOR: return "mifflin_st_jeor";
-        default: return "unknown";
+        case CalorieCalculationMethod::MIFFLIN_ST_JEOR: return "Mifflin-St Jeor";
+        case CalorieCalculationMethod::HARRIS_BENEDICT: return "Harris-Benedict";
+        case CalorieCalculationMethod::WHO_EQUATION: return "WHO Equation";
+        default: return "Unknown";
     }
 }
 
-// Parse string to calorie method enum
-CalorieCalculationMethod User::calorieMethodFromString(const std::string& methodStr) {
-    std::string lowercase = methodStr;
-    std::transform(lowercase.begin(), lowercase.end(), lowercase.begin(), 
-                   [](unsigned char c){ return std::tolower(c); });
-    
-    if (lowercase == "harris_benedict" || lowercase == "harris" || lowercase == "benedict") 
-        return CalorieCalculationMethod::HARRIS_BENEDICT;
-    if (lowercase == "mifflin_st_jeor" || lowercase == "mifflin" || lowercase == "st_jeor") 
-        return CalorieCalculationMethod::MIFFLIN_ST_JEOR;
-    
-    std::cerr << "Unknown calorie method '" << methodStr << "', using Harris-Benedict" << std::endl;
-    return CalorieCalculationMethod::HARRIS_BENEDICT; // Default if not recognized
+/**
+ * stringToActivityLevel Method
+ * @param str The string representation
+ * @return The corresponding ActivityLevel enum
+ */
+User::ActivityLevel User::stringToActivityLevel(const string& str) {
+    if (str == "Sedentary") return ActivityLevel::SEDENTARY;
+    if (str == "Lightly Active") return ActivityLevel::LIGHT;
+    if (str == "Moderately Active") return ActivityLevel::MODERATE;
+    if (str == "Active") return ActivityLevel::ACTIVE;
+    if (str == "Very Active") return ActivityLevel::VERY_ACTIVE;
+    return ActivityLevel::MODERATE; // Default
+}
+
+/**
+ * stringToGoal Method
+ * @param str The string representation
+ * @return The corresponding Goal enum
+ */
+User::Goal User::stringToGoal(const string& str) {
+    if (str == "Lose Weight") return Goal::LOSE_WEIGHT;
+    if (str == "Maintain Weight") return Goal::MAINTAIN;
+    if (str == "Gain Weight") return Goal::GAIN_WEIGHT;
+    return Goal::MAINTAIN; // Default
+}
+
+/**
+ * stringToGender Method
+ * @param str The string representation
+ * @return The corresponding Gender enum
+ */
+User::Gender User::stringToGender(const string& str) {
+    if (str == "Male") return Gender::MALE;
+    if (str == "Female") return Gender::FEMALE;
+    return Gender::OTHER; // Default
+}
+
+/**
+ * stringToCalorieMethod Method
+ * @param str The string representation
+ * @return The corresponding CalorieCalculationMethod enum
+ */
+User::CalorieCalculationMethod User::stringToCalorieMethod(const string& str) {
+    if (str == "Harris-Benedict") return CalorieCalculationMethod::HARRIS_BENEDICT;
+    if (str == "WHO Equation") return CalorieCalculationMethod::WHO_EQUATION;
+    return CalorieCalculationMethod::MIFFLIN_ST_JEOR; // Default
 }

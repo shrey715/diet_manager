@@ -1,131 +1,165 @@
 [
     {
-        "calories": 123232.0,
-        "id": "%%%%",
-        "keywords": [
-            "penis",
-            "penis",
-            "penis",
-            "penis",
-            "penis",
-            "penis",
-            "penis",
-            "penis"
-        ],
-        "type": "basic"
-    },
-    {
-        "calories": 1.2222222222222223e+204,
-        "id": "%%%%%%",
-        "keywords": [
-            "aassssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss"
-        ],
-        "type": "basic"
-    },
-    {
-        "calories": 0.0,
-        "id": "NULL",
-        "keywords": [
-            "NULL"
-        ],
-        "type": "basic"
-    },
-    {
-        "calories": 52.0,
+        "calories": 105.0,
         "id": "apple",
         "keywords": [
+            "apple",
+            "fruit"
+        ]
+    },
+    {
+        "calories": 60.0,
+        "id": "orange",
+        "keywords": [
+            "orange",
             "fruit",
-            "fresh"
-        ],
-        "type": "basic"
+            "citrus"
+        ]
     },
     {
         "calories": 89.0,
         "id": "banana",
         "keywords": [
-            "fruit",
-            "fresh"
-        ],
-        "type": "basic"
+            "banana",
+            "fruit"
+        ]
     },
     {
-        "calories": 75.0,
-        "id": "bread_slice",
-        "keywords": [
-            "bread",
-            "grain",
-            "wheat"
-        ],
-        "type": "basic"
-    },
-    {
-        "calories": 113.0,
-        "id": "cheddar_cheese",
-        "keywords": [
-            "cheese",
-            "dairy",
-            "cheddar"
-        ],
-        "type": "basic"
-    },
-    {
-        "calories": 165.0,
+        "calories": 220.0,
         "id": "chicken_breast",
         "keywords": [
-            "meat",
             "chicken",
-            "protein"
-        ],
-        "type": "basic"
-    },
-    {
-        "calories": 51.0,
-        "id": "grape_jelly",
-        "keywords": [
-            "jelly",
-            "spread",
-            "sweet",
-            "grape"
-        ],
-        "type": "basic"
-    },
-    {
-        "calories": 150.0,
-        "id": "hot_dog",
-        "keywords": [
             "meat",
-            "processed",
-            "sausage"
-        ],
-        "type": "basic"
+            "protein"
+        ]
     },
     {
-        "calories": 188.0,
-        "id": "peanut_butter",
+        "calories": 250.0,
+        "id": "salmon",
         "keywords": [
-            "peanut",
-            "spread",
-            "nut"
-        ],
-        "type": "basic"
+            "salmon",
+            "fish",
+            "seafood",
+            "protein"
+        ]
     },
     {
-        "calories": 205.0,
-        "id": "rice_cup",
+        "calories": 120.0,
+        "id": "rice",
         "keywords": [
+            "rice",
             "grain",
-            "carbohydrate"
-        ],
-        "type": "basic"
+            "carb"
+        ]
     },
     {
-        "calories": 146.0,
-        "id": "whole_milk",
+        "calories": 140.0,
+        "id": "pasta",
+        "keywords": [
+            "pasta",
+            "noodles",
+            "carb"
+        ]
+    },
+    {
+        "calories": 25.0,
+        "id": "spinach",
+        "keywords": [
+            "spinach",
+            "vegetable",
+            "greens"
+        ]
+    },
+    {
+        "calories": 45.0,
+        "id": "carrot",
+        "keywords": [
+            "carrot",
+            "vegetable",
+            "root"
+        ]
+    },
+    {
+        "calories": 110.0,
+        "id": "greek_yogurt",
+        "keywords": [
+            "yogurt",
+            "greek",
+            "dairy",
+            "protein"
+        ]
+    },
+    {
+        "calories": 100.0,
+        "id": "milk",
         "keywords": [
             "milk",
             "dairy",
             "beverage"
-        ],
-        "type": "basic"
+        ]
+    },
+    {
+        "calories": 65.0,
+        "id": "egg",
+        "keywords": [
+            "egg",
+            "protein"
+        ]
+    },
+    {
+        "calories": 180.0,
+        "id": "beef",
+        "keywords": [
+            "beef",
+            "meat",
+            "protein"
+        ]
+    },
+    {
+        "calories": 115.0,
+        "id": "potato",
+        "keywords": [
+            "potato",
+            "vegetable",
+            "starch"
+        ]
+    },
+    {
+        "calories": 160.0,
+        "id": "avocado",
+        "keywords": [
+            "avocado",
+            "fruit",
+            "healthy fat"
+        ]
+    },
+    {
+        "calories": 170.0,
+        "id": "peanut_butter",
+        "keywords": [
+            "peanut butter",
+            "spread",
+            "protein",
+            "fat"
+        ]
+    },
+    {
+        "calories": 95.0,
+        "id": "oats",
+        "keywords": [
+            "oats",
+            "grain",
+            "breakfast",
+            "fiber"
+        ]
+    },
+    {
+        "calories": 250.0,
+        "id": "chocolate",
+        "keywords": [
+            "chocolate",
+            "sweet",
+            "dessert"
+        ]
     }
 ]

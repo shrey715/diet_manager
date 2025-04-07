@@ -1,220 +1,330 @@
 #include "log_entry.h"
-#include <algorithm>
-#include <nlohmann/json.hpp>
-#include <sstream>
+#include <chrono>
+#include <ctime>
 #include <iomanip>
-#include <random>
-#include <iostream>
+#include <sstream>
 
-using json = nlohmann::json;
-
-LogEntry::LogEntry() : date(std::chrono::system_clock::now()) {
-    id = generateId();
-}
-
-LogEntry::LogEntry(const std::string& id, const std::chrono::system_clock::time_point& date)
-    : id(id), date(date) {
-}
-
-// Standard getters and setters
-std::string LogEntry::getId() const { return id; }
-std::chrono::system_clock::time_point LogEntry::getDate() const { return date; }
-const std::vector<LogEntry::FoodEntry>& LogEntry::getConsumedFoods() const { return consumedFoods; }
-void LogEntry::setId(const std::string& id) { this->id = id; }
-void LogEntry::setDate(const std::chrono::system_clock::time_point& date) { this->date = date; }
-
-void LogEntry::addFood(std::shared_ptr<Food> food, double servings, MealType mealType) {
-    if (!food || servings <= 0) {
-        std::cerr << "Invalid food or serving size" << std::endl;
-        return;
-    }
-    
-    // Check if food already exists, if so, update servings
-    auto it = std::find_if(consumedFoods.begin(), consumedFoods.end(),
-        [&food](const FoodEntry& entry) {
-            return std::get<0>(entry)->getId() == food->getId();
-        });
-    
-    if (it != consumedFoods.end()) {
-        // Update servings for existing entry
-        std::get<1>(*it) += servings;
-    } else {
-        // Add new food entry
-        consumedFoods.emplace_back(food, servings, mealType);
+/**
+ * LogEntry Constructor
+ * @param date The date for this log entry (YYYY-MM-DD format)
+ */
+LogEntry::LogEntry(const std::string& date) : date(date) {
+    if (this->date.empty()) {
+        // Use current date if none provided
+        auto now = std::chrono::system_clock::now();
+        auto in_time_t = std::chrono::system_clock::to_time_t(now);
+        std::stringstream ss;
+        ss << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d");
+        this->date = ss.str();
     }
 }
 
+/**
+ * addFood Method
+ * @param foodId The ID of the food to add
+ * @param servings The number of servings
+ */
+void LogEntry::addFood(const std::string& foodId, float servings) {
+    foods[foodId] += servings;
+    if (foods[foodId] <= 0) {
+        foods.erase(foodId);
+    }
+}
+
+/**
+ * removeFood Method
+ * @param foodId The ID of the food to remove
+ */
 void LogEntry::removeFood(const std::string& foodId) {
-    consumedFoods.erase(
-        std::remove_if(consumedFoods.begin(), consumedFoods.end(),
-            [&foodId](const FoodEntry& entry) {
-                return std::get<0>(entry)->getId() == foodId;
-            }),
-        consumedFoods.end());
-}
-
-double LogEntry::getTotalCalories() const {
-    double total = 0.0;
-    for (const auto& entry : consumedFoods) {
-        total += std::get<0>(entry)->getCaloriesPerServing() * std::get<1>(entry);
+    if (foods.find(foodId) != foods.end()) {
+        foods.erase(foodId);
     }
-    return total;
 }
 
-void LogEntry::updateFoodMealType(const std::string& foodId, MealType mealType) {
-    for (auto& entry : consumedFoods) {
-        if (std::get<0>(entry)->getId() == foodId) {
-            std::get<2>(entry) = mealType;
-            break;
+/**
+ * getFoods Method
+ * @return A map of food IDs to servings
+ */
+std::map<std::string, float> LogEntry::getFoods() const {
+    return foods;
+}
+
+/**
+ * getDate Method
+ * @return The date of this log entry
+ */
+std::string LogEntry::getDate() const {
+    return date;
+}
+
+/**
+ * setDate Method
+ * @param date The new date for this log entry
+ */
+void LogEntry::setDate(const std::string& date) {
+    this->date = date;
+}
+
+/**
+ * toJson Method
+ * @return A JSON representation of this log entry
+ */
+json LogEntry::toJson() const {
+    json j;
+    j["date"] = date;
+    j["foods"] = foods;
+    return j;
+}
+
+/**
+ * fromJson Method
+ * @param j The JSON to parse
+ * @return A LogEntry object
+ */
+LogEntry LogEntry::fromJson(const json& j) {
+    LogEntry entry;
+    if (j.contains("date")) {
+        entry.date = j["date"].get<std::string>();
+    }
+    if (j.contains("foods") && j["foods"].is_object()) {
+        for (auto& [key, value] : j["foods"].items()) {
+            entry.foods[key] = value.get<float>();
         }
     }
+    return entry;
 }
 
-double LogEntry::getCaloriesForMeal(MealType mealType) const {
-    double total = 0.0;
-    for (const auto& entry : consumedFoods) {
-        if (std::get<2>(entry) == mealType) {
-            total += std::get<0>(entry)->getCaloriesPerServing() * std::get<1>(entry);
+/**
+ * LogHistory Constructor
+ */
+LogHistory::LogHistory() : currentCommandIndex(0) {
+    currentDate = getCurrentDateString();
+    logs[currentDate] = LogEntry(currentDate);
+}
+
+/**
+ * getCurrentLog Method
+ * @return Pointer to the current log entry
+ */
+LogEntry* LogHistory::getCurrentLog() {
+    if (logs.find(currentDate) == logs.end()) {
+        logs[currentDate] = LogEntry(currentDate);
+    }
+    return &logs[currentDate];
+}
+
+/**
+ * getLog Method
+ * @param date The date to get the log for
+ * @return Pointer to the log entry for the specified date
+ */
+LogEntry* LogHistory::getLog(const std::string& date) {
+    if (logs.find(date) == logs.end()) {
+        logs[date] = LogEntry(date);
+    }
+    return &logs[date];
+}
+
+/**
+ * setCurrentDate Method
+ * @param date The new current date
+ */
+void LogHistory::setCurrentDate(const std::string& date) {
+    currentDate = date;
+    if (logs.find(currentDate) == logs.end()) {
+        logs[currentDate] = LogEntry(currentDate);
+    }
+}
+
+/**
+ * getCurrentDate Method
+ * @return The current date
+ */
+std::string LogHistory::getCurrentDate() const {
+    return currentDate;
+}
+
+/**
+ * getAvailableDates Method
+ * @return A vector of dates that have log entries
+ */
+std::vector<std::string> LogHistory::getAvailableDates() const {
+    std::vector<std::string> dates;
+    for (const auto& [date, _] : logs) {
+        dates.push_back(date);
+    }
+    return dates;
+}
+
+/**
+ * executeCommand Method
+ * @param command The command to execute
+ * @param params The parameters for the command
+ * Executes a command and adds it to the history
+ */
+void LogHistory::executeCommand(const std::string& command, const std::map<std::string, std::string>& params) {
+    if (command == "add-food") {
+        std::string foodId = params.at("food_id");
+        float servings = std::stof(params.at("servings"));
+        auto cmd = std::make_unique<AddFoodCommand>(getCurrentLog(), foodId, servings);
+        addCommand(std::move(cmd));
+    } else if (command == "remove-food") {
+        std::string foodId = params.at("food_id");
+        float servings = getCurrentLog()->getFoods().at(foodId);
+        auto cmd = std::make_unique<RemoveFoodCommand>(getCurrentLog(), foodId, servings);
+        addCommand(std::move(cmd));
+    }
+}
+
+/**
+ * canUndo Method
+ * @return Whether undo is possible
+ */
+bool LogHistory::canUndo() const {
+    return currentCommandIndex > 0;
+}
+
+/**
+ * canRedo Method
+ * @return Whether redo is possible
+ */
+bool LogHistory::canRedo() const {
+    return currentCommandIndex < commandHistory.size();
+}
+
+/**
+ * undo Method
+ * Undoes the last command
+ */
+void LogHistory::undo() {
+    if (canUndo()) {
+        currentCommandIndex--;
+        commandHistory[currentCommandIndex]->unexecute();
+    }
+}
+
+/**
+ * redo Method
+ * Redoes the last undone command
+ */
+void LogHistory::redo() {
+    if (canRedo()) {
+        commandHistory[currentCommandIndex]->execute();
+        currentCommandIndex++;
+    }
+}
+
+/**
+ * toJson Method
+ * @return A JSON representation of the log history
+ */
+json LogHistory::toJson() const {
+    json j = json::array();
+    for (const auto& [date, log] : logs) {
+        j.push_back(log.toJson());
+    }
+    return j;
+}
+
+/**
+ * fromJson Method
+ * @param j The JSON to parse
+ * Loads log history from JSON
+ */
+void LogHistory::fromJson(const json& j) {
+    logs.clear();
+    if (j.is_array()) {
+        for (const auto& logJson : j) {
+            LogEntry log = LogEntry::fromJson(logJson);
+            logs[log.getDate()] = log;
         }
     }
-    return total;
-}
-
-std::map<MealType, double> LogEntry::getCaloriesByMealType() const {
-    std::map<MealType, double> caloriesByMeal;
-    for (const auto& entry : consumedFoods) {
-        MealType mealType = std::get<2>(entry);
-        double calories = std::get<0>(entry)->getCaloriesPerServing() * std::get<1>(entry);
-        caloriesByMeal[mealType] += calories;
+    // If there's no log for current date, create one
+    std::string today = getCurrentDateString();
+    if (logs.find(today) == logs.end()) {
+        logs[today] = LogEntry(today);
     }
-    return caloriesByMeal;
+    currentDate = today;
 }
 
-// Serialization functions
-void LogEntry::toJson(std::ostream& os) const {
-    try {
-        json j;
-        j["id"] = id;
-        j["date"] = dateToString(date);
-        
-        json foodsJson = json::array();
-        for (const auto& entry : consumedFoods) {
-            if (auto food = std::get<0>(entry)) {
-                json foodJson;
-                foodJson["food_id"] = food->getId();
-                foodJson["servings"] = std::get<1>(entry);
-                foodJson["meal_type"] = mealTypeToString(std::get<2>(entry));
-                foodsJson.push_back(foodJson);
-            }
-        }
-        j["consumed_foods"] = foodsJson;
-        
-        os << j.dump(4);
-    } catch (const std::exception& e) {
-        std::cerr << "Error generating JSON for LogEntry: " << e.what() << std::endl;
-        // Fallback with minimal valid JSON
-        os << "{\"id\":\"" << id << "\",\"date\":\"" << dateToString(date) << "\",\"consumed_foods\":[]}";
-    }
-}
-
-std::shared_ptr<LogEntry> LogEntry::fromJson(
-    const std::string& jsonString, 
-    const std::map<std::string, std::shared_ptr<Food>>& foodDatabase) {
-    
-    try {
-        json j = json::parse(jsonString);
-        auto logEntry = std::make_shared<LogEntry>();
-        
-        // Set basic properties
-        logEntry->setId(j["id"]);
-        logEntry->setDate(stringToDate(j["date"]));
-        
-        // Load consumed foods
-        if (j.contains("consumed_foods") && j["consumed_foods"].is_array()) {
-            for (const auto& foodJson : j["consumed_foods"]) {
-                // Skip invalid entries
-                if (!foodJson.contains("food_id") || !foodJson.contains("servings"))
-                    continue;
-                
-                std::string foodId = foodJson["food_id"];
-                double servings = foodJson["servings"];
-                
-                // Default to OTHER meal type if not specified
-                MealType mealType = MealType::OTHER;
-                if (foodJson.contains("meal_type")) {
-                    mealType = mealTypeFromString(foodJson["meal_type"]);
-                }
-                
-                // Add food if it exists in database
-                auto it = foodDatabase.find(foodId);
-                if (it != foodDatabase.end() && it->second) {
-                    logEntry->addFood(it->second, servings, mealType);
-                }
-            }
-        }
-        
-        return logEntry;
-    } catch (const std::exception& e) {
-        std::cerr << "Error parsing LogEntry: " << e.what() << std::endl;
-        return std::make_shared<LogEntry>(); // Return empty log entry on error
-    }
-}
-
-// Utility methods
-std::string LogEntry::generateId() {
-    static std::random_device rd;
-    static std::mt19937 gen(rd());
-    static std::uniform_int_distribution<> dis(0, 15);
-    static const char* digits = "0123456789abcdef";
-    
-    std::string uuid;
-    uuid.reserve(36);
-    
-    for (int i = 0; i < 36; ++i) {
-        if (i == 8 || i == 13 || i == 18 || i == 23) {
-            uuid += '-';
-        } else {
-            uuid += digits[dis(gen)];
-        }
-    }
-    
-    return uuid;
-}
-
-// Date/time conversion functions
-std::string LogEntry::dateToString(const std::chrono::system_clock::time_point& date) {
-    auto time = std::chrono::system_clock::to_time_t(date);
+/**
+ * getCurrentDateString Method
+ * @return The current date as a string (YYYY-MM-DD)
+ */
+std::string LogHistory::getCurrentDateString() const {
+    auto now = std::chrono::system_clock::now();
+    auto in_time_t = std::chrono::system_clock::to_time_t(now);
     std::stringstream ss;
-    ss << std::put_time(std::localtime(&time), "%Y-%m-%d");
+    ss << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d");
     return ss.str();
 }
 
-std::chrono::system_clock::time_point LogEntry::stringToDate(const std::string& dateStr) {
-    std::tm tm = {};
-    std::stringstream ss(dateStr);
-    ss >> std::get_time(&tm, "%Y-%m-%d");
-    return std::chrono::system_clock::from_time_t(std::mktime(&tm));
-}
-
-// Meal type conversion helpers
-std::string LogEntry::mealTypeToString(MealType mealType) {
-    switch (mealType) {
-        case MealType::BREAKFAST: return "Breakfast";
-        case MealType::LUNCH: return "Lunch";
-        case MealType::DINNER: return "Dinner";
-        case MealType::SNACK: return "Snack";
-        default: return "Other";
+/**
+ * addCommand Method
+ * @param command The command to add to history
+ */
+void LogHistory::addCommand(std::unique_ptr<Command> command) {
+    // If we're not at the end of history, remove everything after currentCommandIndex
+    if (currentCommandIndex < commandHistory.size()) {
+        commandHistory.resize(currentCommandIndex);
     }
+    
+    // Execute the command and add it to history
+    command->execute();
+    commandHistory.push_back(std::move(command));
+    currentCommandIndex++;
 }
 
-MealType LogEntry::mealTypeFromString(const std::string& mealTypeStr) {
-    std::string lower;
-    std::transform(mealTypeStr.begin(), mealTypeStr.end(), std::back_inserter(lower), 
-                   [](unsigned char c) { return std::tolower(c); });
-    
-    if (lower == "breakfast") return MealType::BREAKFAST;
-    if (lower == "lunch") return MealType::LUNCH;
-    if (lower == "dinner") return MealType::DINNER;
-    if (lower == "snack") return MealType::SNACK;
-    return MealType::OTHER;
+/**
+ * AddFoodCommand Constructor
+ */
+LogHistory::AddFoodCommand::AddFoodCommand(LogEntry* log, const std::string& foodId, float servings) 
+    : log(log), foodId(foodId), servings(servings) {}
+
+/**
+ * execute Method for AddFoodCommand
+ */
+void LogHistory::AddFoodCommand::execute() {
+    log->addFood(foodId, servings);
+}
+
+/**
+ * unexecute Method for AddFoodCommand
+ */
+void LogHistory::AddFoodCommand::unexecute() {
+    log->addFood(foodId, -servings);
+}
+
+/**
+ * toString Method for AddFoodCommand
+ */
+std::string LogHistory::AddFoodCommand::toString() const {
+    return "AddFood: " + foodId + ", " + std::to_string(servings) + " servings";
+}
+
+/**
+ * RemoveFoodCommand Constructor
+ */
+LogHistory::RemoveFoodCommand::RemoveFoodCommand(LogEntry* log, const std::string& foodId, float servings) 
+    : log(log), foodId(foodId), servings(servings) {}
+
+/**
+ * execute Method for RemoveFoodCommand
+ */
+void LogHistory::RemoveFoodCommand::execute() {
+    log->removeFood(foodId);
+}
+
+/**
+ * unexecute Method for RemoveFoodCommand
+ */
+void LogHistory::RemoveFoodCommand::unexecute() {
+    log->addFood(foodId, servings);
+}
+
+/**
+ * toString Method for RemoveFoodCommand
+ */
+std::string LogHistory::RemoveFoodCommand::toString() const {
+    return "RemoveFood: " + foodId;
 }

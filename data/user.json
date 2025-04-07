@@ -1,8 +1,10 @@
 {
-    "activity_level": "sedentary",
+    "activityLevel": 0,
     "age": 19,
-    "calorie_method": "harris_benedict",
-    "gender": "male",
-    "height_cm": 174.0,
-    "weight_kg": 59.0
+    "calorieCalcMethod": 1,
+    "gender": 0,
+    "goal": 2,
+    "height": 174.0,
+    "name": "Shreyas Deb",
+    "weight": 59.0
 }

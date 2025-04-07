@@ -1,33 +1,40 @@
 CXX = g++
-CXXFLAGS = -std=c++17
-LDFLAGS = -lstdc++fs
+CXXFLAGS = -std=c++17 -Wall -Wextra
+INCLUDES = -Isrc
+LIBS = -lstdc++fs
 
 # Source files
-SOURCES = src/main.cpp \
-          src/cli.cpp \
-          src/models/basic_food.cpp \
-          src/models/composite_food.cpp \
-          src/models/user.cpp \
-          src/models/log_entry.cpp \
-          src/managers/food_database.cpp \
-          src/managers/log_manager.cpp
+SRCS = $(shell find src -name "*.cpp")
+OBJS = $(SRCS:.cpp=.o)
 
-# Object files
-OBJECTS = $(SOURCES:.cpp=.o)
+# Output executable
+TARGET = diet_manager
 
-# Executable name
-EXECUTABLE = diet_manager
+# Default target
+all: $(TARGET)
 
-all: $(EXECUTABLE)
+# Linking
+$(TARGET): $(OBJS)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $(TARGET) $(OBJS) $(LIBS)
+	mkdir -p data
 
-$(EXECUTABLE): $(OBJECTS)
-	$(CXX) $(CXXFLAGS) $(OBJECTS) -o $@ $(LDFLAGS)
-
-# Rule for building object files
+# Compiling
 %.o: %.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
+# Clean
 clean:
-	rm -f $(OBJECTS) $(EXECUTABLE)
+	rm -f $(OBJS) $(TARGET)
 
-.PHONY: all clean
+# Run
+run: $(TARGET)
+	./$(TARGET)
+
+# Install
+install: $(TARGET)
+	mkdir -p $(HOME)/bin
+	cp $(TARGET) $(HOME)/bin/
+	mkdir -p $(HOME)/.diet_manager/data
+	cp -r data/* $(HOME)/.diet_manager/data/ 2>/dev/null || :
+
+.PHONY: all clean run install

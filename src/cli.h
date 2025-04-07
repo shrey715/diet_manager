@@ -1,128 +1,79 @@
 #ifndef CLI_H
 #define CLI_H
 
-#include "managers/food_database.h"
-#include "managers/log_manager.h"
-#include "models/user.h"
-#include "utils/color.h"
-#include <memory>
-#include <chrono>
 #include <string>
 #include <vector>
-#include <functional>
 #include <map>
-#include <deque>
+#include <functional>
+#include <sstream>
+#include "models/user.h"
+#include "models/food.h"
+#include "models/log_entry.h"
+#include "manager/food_database.h"
+#include "manager/user_profile.h"
+#include "utils/terminal_colors.h"
+
+using namespace std;
 
 /**
- * @enum ViewMode 
- * @brief Different views in the CLI interface
- */
-enum class ViewMode {
-    MAIN_MENU,
-    FOOD_DATABASE,
-    FOOD_DETAIL,
-    LOG_ENTRY,
-    USER_PROFILE,
-    HELP,
-    COMMAND_HISTORY
-};
-
-/**
- * @class CLI
- * @brief Main command-line interface for diet manager
+ * CLI Class
+ * This class handles the command-line interface for the diet manager application.
  */
 class CLI {
+public:
+    CLI();
+    void run();
+
 private:
-    std::shared_ptr<FoodDatabase> foodDatabase;
-    std::shared_ptr<LogManager> logManager;
-    std::shared_ptr<User> user;
-    std::string userFilePath;
-    bool running;
-    ViewMode currentView;
-    std::deque<std::string> commandHistory;
-    const size_t maxHistorySize = 100; 
-    std::string foodDetailId;
-    int termWidth = 80;
-    int termHeight = 24;
+    // Command handlers
+    using CommandFunc = function<void(const vector<string>&)>;
+    map<string, CommandFunc> commands;
+    map<string, string> helpText;
     
-    // Command handling
-    struct Command {
-        std::string name;
-        std::string description;
-        std::string category;
-        std::string usage;
-        std::function<void(const std::vector<std::string>&)> handler;
-    };
+    // Current date
+    string currentDate;
     
-    std::map<std::string, Command> commands;
+    // Data managers
+    FoodDatabase& foodDb;
+    UserProfile& userProfile;
+    LogHistory logHistory;
+    
+    // Initialize commands
+    void registerCommands();
     
     // Helper methods
-    void registerCommands();
-    std::vector<std::string> parseInput(const std::string& input) const;
-    void clearScreen() const;
-    void getTerminalSize() const;
-    std::string centerText(const std::string& text, int width) const;
-    std::string formatCalories(double calories) const;
+    vector<string> parseCommandLine(const string& line);
+    void displayHelp(const vector<string>& args);
+    bool confirmAction(const string& message);
     
-    // UI display methods
-    void displayLogo() const;
-    void displayHeader(const std::string& title) const;
-    void displayFooter() const;
-    void displayStatusBar() const;
-    void displayMenuPrompt() const;
-    void displayHelp() const;
-    void displayCommandHistory() const;
-    void displayMainMenu() const;
-    void displayFoodDatabaseView() const;
-    void displayFoodDetailView(const std::string& foodId) const;
-    void displayLogEntryView() const;
-    void displayUserProfileView() const;
+    // Date helper
+    string getCurrentDate() const;
     
-    // View management
-    void setView(ViewMode view);
-    void addToHistory(const std::string& command);
+    // Food database commands
+    void addBasicFood(const vector<string>& args);
+    void listFoods(const vector<string>& args);
+    void searchFoods(const vector<string>& args);
+    void createCompositeFood(const vector<string>& args);
     
-    // User profile management
-    void loadUserProfile();
-    void saveUserProfile() const;
-    void createUserProfile();
-    void displayUserProfile() const;
+    // Log commands
+    void addFoodToLog(const vector<string>& args);
+    void removeFoodFromLog(const vector<string>& args);
+    void viewLog(const vector<string>& args);
+    void setDate(const vector<string>& args);
+    void undoCommand(const vector<string>& args);
+    void redoCommand(const vector<string>& args);
     
-    // Command handlers
-    void handleQuit(const std::vector<std::string>& args);
-    void handleHelp(const std::vector<std::string>& args);
-    void handleAddBasicFood(const std::vector<std::string>& args);
-    void handleListFoods(const std::vector<std::string>& args);
-    void handleSearchFoods(const std::vector<std::string>& args);
-    void handleCreateCompositeFood(const std::vector<std::string>& args);
-    void handleAddFoodToLog(const std::vector<std::string>& args);
-    void handleRemoveFoodFromLog(const std::vector<std::string>& args);
-    void handleViewLogEntry(const std::vector<std::string>& args);
-    void handleSetDate(const std::vector<std::string>& args);
-    void handleUndo(const std::vector<std::string>& args);
-    void handleRedo(const std::vector<std::string>& args);
-    void handleUpdateProfile(const std::vector<std::string>& args);
-    void handleShowCalories(const std::vector<std::string>& args);
-    void handleSaveData(const std::vector<std::string>& args);
-    void handleLoadData(const std::vector<std::string>& args);
-    void handleViewFood(const std::vector<std::string>& args);
-    void handleHistory(const std::vector<std::string>& args);
-    void handleView(const std::vector<std::string>& args);
-    void handleRefresh(const std::vector<std::string>& args);
+    // User profile commands
+    void viewProfile(const vector<string>& args);
+    void updateProfile(const vector<string>& args);
+    void viewCalories(const vector<string>& args);
     
-public:
-    /**
-     * @brief Constructor with file paths
-     */
-    CLI(const std::string& basicFoodFilePath, 
-        const std::string& compositeFoodFilePath,
-        const std::string& logFilePath,
-        const std::string& userFilePath);
+    // Data management commands
+    void saveData(const vector<string>& args);
+    void loadData(const vector<string>& args);
     
-    /**
-     * @brief Run the CLI application
-     */
-    void run();
+    // Exit command
+    void quitProgram(const vector<string>& args);
 };
 
 #endif // CLI_H

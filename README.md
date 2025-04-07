@@ -8,7 +8,7 @@ A simple command-line application to track food consumption and manage dietary g
 - Create composite foods from existing basic and composite foods
 - Track daily food consumption in logs
 - Set and monitor caloric intake goals based on personal profile
-- Calculate target calorie intake using different methods (Harris-Benedict or Mifflin-St Jeor)
+- Calculate target calorie intake using different methods (Harris-Benedict, Mifflin-St Jeor, or WHO equation)
 - Undo/redo functionality for log operations
 - Search foods by keywords
 
@@ -60,10 +60,10 @@ The application provides a command-line interface with the following commands:
 
 ### Food Database Commands
 
-- `add-basic-food <id> <calories> <keyword1> [keyword2] ...` - Add a new basic food
+- `add-basic-food <calories> <keyword1> [keyword2] ...` - Add a new basic food
 - `list-foods` - List all available foods
 - `search-foods <keyword1> [keyword2] ... [--all]` - Search for foods by keywords
-- `create-composite <id> <keyword1> [keyword2] ... --components <food1> <servings1> [<food2> <servings2> ...]` - Create a composite food
+- `create-composite <keyword1> [keyword2] ... --components <food1> <servings1> [<food2> <servings2> ...]` - Create a composite food
 
 ### Log Management Commands
 
@@ -110,7 +110,22 @@ Target Calories: 2500
 Difference: -2310 (Under target)
 ```
 
+## Design Features
+
+### Extensibility
+
+1. **New Calorie Calculation Methods:** The system is designed to easily incorporate new methods for calculating target calories by simply adding a new calculation method to the User class and extending the CalorieCalculationMethod enum.
+
+2. **External Food Data Sources:** The FoodDatabase class includes a plugin architecture allowing new food data sources to be registered using the registerFoodDataSource method, enabling the application to import food data from external sources like restaurant websites or nutritional databases.
+
+3. **Command Pattern for Logs:** Log operations use the Command pattern to enable unlimited undo/redo functionality while keeping a single source of truth for data.
+
+### Efficiency
+
+1. **Shared Food References:** The system uses shared pointers to food objects, ensuring that multiple references to the same food don't duplicate memory.
+
+2. **Composite Pattern for Foods:** The application implements the Composite pattern for food items, allowing complex foods to be built from simpler ones while maintaining a consistent interface.
+
 ## Notes
 
 This is an academic project built as a prototype. Some features may not be fully implemented or tested.
-# diet_manager

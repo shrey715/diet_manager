@@ -2,80 +2,85 @@
 #define USER_H
 
 #include <string>
-#include <functional>
+#include <vector>
 #include <map>
+#include <chrono>
+#include <nlohmann/json.hpp>
 
-enum class Gender {
-    MALE,
-    FEMALE,
-    OTHER
-};
+using json = nlohmann::json;
+using namespace std;
 
-enum class ActivityLevel {
-    SEDENTARY,
-    LIGHT,
-    MODERATE,
-    ACTIVE,
-    VERY_ACTIVE
-};
-
-enum class CalorieCalculationMethod {
-    HARRIS_BENEDICT,
-    MIFFLIN_ST_JEOR
-};
-
+/**
+ * User Class
+ * This class represents a user of the diet manager application.
+ */
 class User {
-private:
-    Gender gender;
-    double heightCm;
-    int age;
-    double weightKg;
-    ActivityLevel activityLevel;
-    CalorieCalculationMethod calorieMethod;
-    
-    // Map of calculation methods
-    using CalorieCalculationFunc = std::function<double(const User&)>;
-    static std::map<CalorieCalculationMethod, CalorieCalculationFunc> calculationMethods;
-    
-    // Calculation methods
-    static double calculateHarrisBenedict(const User& user);
-    static double calculateMifflinStJeor(const User& user);
-    
 public:
-    User();
-    User(Gender gender, double heightCm, int age, double weightKg, 
-         ActivityLevel activityLevel, CalorieCalculationMethod method);
-    
+    enum class Gender { MALE, FEMALE, OTHER };
+    enum class ActivityLevel { SEDENTARY, LIGHT, MODERATE, ACTIVE, VERY_ACTIVE };
+    enum class Goal { LOSE_WEIGHT, MAINTAIN, GAIN_WEIGHT };
+    enum class CalorieCalculationMethod { MIFFLIN_ST_JEOR, HARRIS_BENEDICT, WHO_EQUATION };
+
+    User(const string& name = "", int age = 0, Gender gender = Gender::OTHER,
+         float height = 0.0f, float weight = 0.0f, 
+         ActivityLevel activity = ActivityLevel::MODERATE,
+         Goal goal = Goal::MAINTAIN,
+         CalorieCalculationMethod calcMethod = CalorieCalculationMethod::MIFFLIN_ST_JEOR);
+
     // Getters
-    Gender getGender() const;
-    double getHeightCm() const;
+    const string& getName() const;
     int getAge() const;
-    double getWeightKg() const;
+    Gender getGender() const;
+    float getHeight() const;
+    float getWeight() const;
     ActivityLevel getActivityLevel() const;
-    CalorieCalculationMethod getCalorieMethod() const;
+    Goal getGoal() const;
+    CalorieCalculationMethod getCalorieCalculationMethod() const;
     
     // Setters
-    void setGender(Gender gender);
-    void setHeightCm(double heightCm);
+    void setName(const string& name);
     void setAge(int age);
-    void setWeightKg(double weightKg);
-    void setActivityLevel(ActivityLevel level);
-    void setCalorieMethod(CalorieCalculationMethod method);
-    
-    // Calculate target calorie intake
-    double calculateTargetCalories() const;
-    
-    // Serialization
-    void toJson(std::ostream& os) const;
-    static User fromJson(const std::string& json);
+    void setGender(Gender gender);
+    void setHeight(float height);
+    void setWeight(float weight);
+    void setActivityLevel(ActivityLevel activity);
+    void setGoal(Goal goal);
+    void setCalorieCalculationMethod(CalorieCalculationMethod method);
     
     // Utility methods
-    static std::string genderToString(Gender gender);
-    static Gender genderFromString(const std::string& genderStr);
-    static std::string activityLevelToString(ActivityLevel level);
-    static ActivityLevel activityLevelFromString(const std::string& levelStr);
-    static std::string calorieMethodToString(CalorieCalculationMethod method);
-    static CalorieCalculationMethod calorieMethodFromString(const std::string& methodStr);
+    float calculateBMI() const;
+    float calculateBMR() const;
+    float calculateBMRHarrisBenedict() const;
+    float calculateBMRWHOEquation() const;
+    float calculateDailyCalorieNeeds() const;
+    float calculateTargetCalories() const;
+
+    // Conversion utilities for enums
+    static string activityLevelToString(ActivityLevel level);
+    static string goalToString(Goal goal);
+    static string genderToString(Gender gender);
+    static string calorieMethodToString(CalorieCalculationMethod method);
+    static ActivityLevel stringToActivityLevel(const string& str);
+    static Goal stringToGoal(const string& str);
+    static Gender stringToGender(const string& str);
+    static CalorieCalculationMethod stringToCalorieMethod(const string& str);
+    
+    // Serialization
+    json toJson() const;
+    static User fromJson(const json& j);
+
+private:
+    string name;
+    int age;
+    Gender gender;
+    float height; // in cm
+    float weight; // in kg
+    ActivityLevel activityLevel;
+    Goal goal;
+    CalorieCalculationMethod calorieCalcMethod;
+
+    float getActivityMultiplier() const;
+    float getGoalCalorieAdjustment() const;
 };
 
 #endif // USER_H
