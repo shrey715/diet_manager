@@ -60,20 +60,26 @@
         {
             "activityLevel": 2,
             "age": 19,
-            "timestamp": 1744116299,
+            "timestamp": 1744116145,
             "weight": 6.0
         },
         {
             "activityLevel": 2,
             "age": 19,
-            "timestamp": 1744116302,
+            "timestamp": 1744116156,
+            "weight": 6.0
+        },
+        {
+            "activityLevel": 2,
+            "age": 19,
+            "timestamp": 1744116160,
             "weight": 6.0
         }
     ],
     "gender": 0,
     "goal": 0,
     "height": 174.0,
-    "lastUpdateTime": 1744116302,
+    "lastUpdateTime": 1744116160,
     "name": "Shreyas Deb",
     "weight": 6.0
 }

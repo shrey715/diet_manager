@@ -1,0 +1,223 @@
+[
+    {
+        "calories": 310.0,
+        "components": {
+            "avocado": 1.0,
+            "bread": 2.0
+        },
+        "id": "avocado_toast",
+        "keywords": [
+            "breakfast",
+            "toast",
+            "trendy",
+            "healthy"
+        ]
+    },
+    {
+        "calories": 410.0,
+        "components": {
+            "carrot": 1.0,
+            "chicken_breast": 1.0,
+            "rice": 1.0,
+            "spinach": 1.0
+        },
+        "id": "balanced_meal",
+        "keywords": [
+            "balanced",
+            "healthy",
+            "meal",
+            "dinner"
+        ]
+    },
+    {
+        "calories": 322.5,
+        "components": {
+            "beef": 1.0,
+            "carrot": 0.5,
+            "rice": 1.0
+        },
+        "id": "beef_bowl",
+        "keywords": [
+            "beef",
+            "bowl",
+            "dinner",
+            "hearty"
+        ]
+    },
+    {
+        "calories": 239.5,
+        "components": {
+            "banana": 1.0,
+            "milk": 0.5,
+            "oats": 1.0
+        },
+        "id": "breakfast_oatmeal",
+        "keywords": [
+            "breakfast",
+            "oatmeal",
+            "morning"
+        ]
+    },
+    {
+        "calories": 462.5,
+        "components": {
+            "avocado": 0.5,
+            "carrot": 0.5,
+            "chicken_breast": 1.0,
+            "rice": 1.5
+        },
+        "id": "chicken_rice_bowl",
+        "keywords": [
+            "bowl",
+            "dinner",
+            "protein",
+            "meal"
+        ]
+    },
+    {
+        "calories": 214.0,
+        "components": {
+            "banana": 1.0,
+            "chocolate": 0.5
+        },
+        "id": "chocolate_banana",
+        "keywords": [
+            "dessert",
+            "sweet",
+            "snack"
+        ]
+    },
+    {
+        "calories": 254.0,
+        "components": {
+            "apple": 1.0,
+            "banana": 1.0,
+            "orange": 1.0
+        },
+        "id": "fruit_salad",
+        "keywords": [
+            "salad",
+            "fruit",
+            "healthy",
+            "dessert"
+        ]
+    },
+    {
+        "calories": 380.0,
+        "components": {
+            "bread": 2.0,
+            "egg": 2.0,
+            "milk": 1.0
+        },
+        "id": "hearty_breakfast",
+        "keywords": [
+            "breakfast",
+            "hearty",
+            "morning",
+            "complete"
+        ]
+    },
+    {
+        "calories": 255.0,
+        "components": {
+            "carrot": 1.0,
+            "pasta": 1.5,
+            "spinach": 1.0
+        },
+        "id": "pasta_primavera",
+        "keywords": [
+            "pasta",
+            "dinner",
+            "vegetarian",
+            "italian"
+        ]
+    },
+    {
+        "calories": 320.0,
+        "components": {
+            "bread": 2.0,
+            "peanut_butter": 1.0
+        },
+        "id": "peanut_butter_sandwich",
+        "keywords": [
+            "sandwich",
+            "peanut butter",
+            "lunch"
+        ]
+    },
+    {
+        "calories": 280.0,
+        "components": {
+            "bread": 2.0,
+            "egg": 2.0,
+            "spinach": 1.0
+        },
+        "id": "protein_breakfast",
+        "keywords": [
+            "breakfast",
+            "protein",
+            "morning",
+            "eggs"
+        ]
+    },
+    {
+        "calories": 460.0,
+        "components": {
+            "chicken_breast": 1.0,
+            "egg": 2.0,
+            "greek_yogurt": 1.0
+        },
+        "id": "protein_plate",
+        "keywords": [
+            "protein",
+            "meal",
+            "fitness",
+            "dinner"
+        ]
+    },
+    {
+        "calories": 415.0,
+        "components": {
+            "potato": 1.0,
+            "salmon": 1.0,
+            "spinach": 2.0
+        },
+        "id": "salmon_dinner",
+        "keywords": [
+            "dinner",
+            "seafood",
+            "healthy",
+            "meal"
+        ]
+    },
+    {
+        "calories": 297.5,
+        "components": {
+            "avocado": 0.5,
+            "bread": 2.0,
+            "carrot": 0.5,
+            "spinach": 1.0
+        },
+        "id": "veggie_sandwich",
+        "keywords": [
+            "sandwich",
+            "vegetarian",
+            "lunch"
+        ]
+    },
+    {
+        "calories": 200.0,
+        "components": {
+            "apple": 0.5,
+            "greek_yogurt": 1.0,
+            "oats": 0.5
+        },
+        "id": "yogurt_parfait",
+        "keywords": [
+            "breakfast",
+            "yogurt",
+            "healthy",
+            "snack"
+        ]
+    }
+]
