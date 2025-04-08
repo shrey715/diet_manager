@@ -1,0 +1,7 @@
+/home/oem/IIITH-II-II/DASS/diet_manager/build/CMakeFiles/diet_manager.dir
+/home/oem/IIITH-II-II/DASS/diet_manager/build/CMakeFiles/edit_cache.dir
+/home/oem/IIITH-II-II/DASS/diet_manager/build/CMakeFiles/rebuild_cache.dir
+/home/oem/IIITH-II-II/DASS/diet_manager/build/CMakeFiles/list_install_components.dir
+/home/oem/IIITH-II-II/DASS/diet_manager/build/CMakeFiles/install.dir
+/home/oem/IIITH-II-II/DASS/diet_manager/build/CMakeFiles/install/local.dir
+/home/oem/IIITH-II-II/DASS/diet_manager/build/CMakeFiles/install/strip.dir
