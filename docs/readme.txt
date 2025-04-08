@@ -18,6 +18,45 @@
 - CMake (3.10 or higher)
 - nlohmann_json library
 
+### Installing Dependencies
+
+```bash
+# For Ubuntu/Debian
+sudo apt-get install build-essential cmake
+sudo apt-get install nlohmann-json3-dev
+
+# For Fedora
+sudo dnf install gcc-c++ cmake
+sudo dnf install nlohmann-json-devel
+
+# For Arch Linux
+sudo pacman -S base-devel cmake
+sudo pacman -S nlohmann-json
+```
+
+### Alternative nlohmann_json Setup Methods
+
+If you can't install the library system-wide:
+
+1. Single-header inclusion:
+   ```bash
+   mkdir -p include
+   curl -o include/json.hpp https://raw.githubusercontent.com/nlohmann/json/develop/single_include/nlohmann/json.hpp
+   # Then update CMakeLists.txt to include this directory
+   ```
+
+2. Using CMake FetchContent (add to CMakeLists.txt):
+   ```cmake
+   include(FetchContent)
+   FetchContent_Declare(
+       json
+       GIT_REPOSITORY https://github.com/nlohmann/json.git
+       GIT_TAG v3.11.2
+   )
+   FetchContent_MakeAvailable(json)
+   # Then link with nlohmann_json::nlohmann_json
+   ```
+
 ### Build Instructions
 
 Using CMake:
@@ -85,4 +124,3 @@ The application uses JSON files to store data:
 - `composite_food.json` - Composite food items database
 - `logs.json` - Daily food consumption logs
 - `user.json` - User profile information
-

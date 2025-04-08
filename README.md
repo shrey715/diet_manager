@@ -20,6 +20,24 @@ A simple command-line application to track food consumption and manage dietary g
 - CMake (3.10 or higher)
 - nlohmann_json library
 
+### Installing Dependencies
+
+```bash
+# For Ubuntu/Debian
+sudo apt-get install build-essential cmake
+sudo apt-get install nlohmann-json3-dev
+
+# For Fedora
+sudo dnf install gcc-c++ cmake
+sudo dnf install nlohmann-json-devel
+
+# For Arch Linux
+sudo pacman -S base-devel cmake
+sudo pacman -S nlohmann-json
+```
+
+If you can't install the nlohmann_json library system-wide, the project includes alternative methods for handling this dependency. See the "Handling nlohmann_json" section below.
+
 ### Build Instructions
 
 Using CMake:
@@ -36,6 +54,35 @@ Or using the Makefile directly:
 ```bash
 make
 ```
+
+### Handling nlohmann_json
+
+If the system-wide installation doesn't work, you can use one of these alternatives:
+
+#### Option 1: Include as Single Header
+
+```bash
+mkdir -p include
+curl -o include/json.hpp https://raw.githubusercontent.com/nlohmann/json/develop/single_include/nlohmann/json.hpp
+```
+
+Then update CMakeLists.txt to include this directory.
+
+#### Option 2: Use FetchContent in CMake
+
+Add to CMakeLists.txt:
+
+```cmake
+include(FetchContent)
+FetchContent_Declare(
+    json
+    GIT_REPOSITORY https://github.com/nlohmann/json.git
+    GIT_TAG v3.11.2
+)
+FetchContent_MakeAvailable(json)
+```
+
+Then link with `nlohmann_json::nlohmann_json`.
 
 ## Running
 
