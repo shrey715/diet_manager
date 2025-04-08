@@ -10,6 +10,38 @@
 using json = nlohmann::json;
 using namespace std;
 
+// Config variable for controlling how long a day lasts (in seconds)
+const unsigned int DAY_LENGTH = 10; // 24 hours = 86400 seconds
+
+/**
+ * DailyMetric struct
+ * Represents a daily record of user metrics
+ */
+struct DailyMetric {
+    time_t timestamp;
+    float weight;
+    int age;
+    int activityLevel; // Stored as an integer equivalent of ActivityLevel enum
+    
+    json toJson() const {
+        json j;
+        j["timestamp"] = timestamp;
+        j["weight"] = weight;
+        j["age"] = age;
+        j["activityLevel"] = activityLevel;
+        return j;
+    }
+    
+    static DailyMetric fromJson(const json& j) {
+        DailyMetric metric;
+        metric.timestamp = j.value("timestamp", time(nullptr));
+        metric.weight = j.value("weight", 0.0f);
+        metric.age = j.value("age", 0);
+        metric.activityLevel = j.value("activityLevel", 2); // Default to MODERATE
+        return metric;
+    }
+};
+
 /**
  * User Class
  * This class represents a user of the diet manager application.
@@ -47,6 +79,15 @@ public:
     void setGoal(Goal goal);
     void setCalorieCalculationMethod(CalorieCalculationMethod method);
     
+    // Daily tracking methods
+    bool needsDailyUpdate() const;
+    void ensureDailyRecordExists();
+    time_t getLastUpdateTime() const;
+    void updateDailyRecord();
+    const vector<DailyMetric>& getDailyMetrics() const;
+    string getFormattedDate(time_t timestamp) const;
+    time_t getCurrentDay() const;
+    
     // Utility methods
     float calculateBMI() const;
     float calculateBMR() const;
@@ -78,7 +119,11 @@ private:
     ActivityLevel activityLevel;
     Goal goal;
     CalorieCalculationMethod calorieCalcMethod;
-
+    
+    // Time-series data for daily metrics
+    vector<DailyMetric> dailyMetrics;
+    time_t lastUpdateTime;
+    
     float getActivityMultiplier() const;
     float getGoalCalorieAdjustment() const;
 };

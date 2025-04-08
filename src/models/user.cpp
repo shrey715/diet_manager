@@ -1,4 +1,7 @@
 #include "user.h"
+#include <ctime>
+#include <iomanip>
+#include <sstream>
 
 /**
  * User Class Constructor
@@ -15,7 +18,13 @@
 User::User(const string& name, int age, Gender gender, float height, 
            float weight, ActivityLevel activity, Goal goal, CalorieCalculationMethod calcMethod)
     : name(name), age(age), gender(gender), height(height), 
-      weight(weight), activityLevel(activity), goal(goal), calorieCalcMethod(calcMethod) {
+      weight(weight), activityLevel(activity), goal(goal), calorieCalcMethod(calcMethod),
+      lastUpdateTime(time(nullptr)) {
+    
+    // Initialize with first daily record
+    if (weight > 0 && age > 0) {
+        updateDailyRecord();
+    }
 }
 
 /**
@@ -31,6 +40,10 @@ const string& User::getName() const {
  * @return The age of the user
  */
 int User::getAge() const {
+    // Return current age or last recorded age from dailyMetrics
+    if (!dailyMetrics.empty()) {
+        return dailyMetrics.back().age;
+    }
     return age;
 }
 
@@ -55,6 +68,10 @@ float User::getHeight() const {
  * @return The weight of the user in kg
  */
 float User::getWeight() const {
+    // Return current weight or last recorded weight from dailyMetrics
+    if (!dailyMetrics.empty()) {
+        return dailyMetrics.back().weight;
+    }
     return weight;
 }
 
@@ -63,6 +80,10 @@ float User::getWeight() const {
  * @return The activity level of the user
  */
 User::ActivityLevel User::getActivityLevel() const {
+    // Return current activity level or last recorded level from dailyMetrics
+    if (!dailyMetrics.empty()) {
+        return static_cast<ActivityLevel>(dailyMetrics.back().activityLevel);
+    }
     return activityLevel;
 }
 
@@ -95,7 +116,10 @@ void User::setName(const string& name) {
  * @param age The new age of the user
  */
 void User::setAge(int age) {
+    // Update member variable and ensure today's daily record exists with updated value
     this->age = age;
+    ensureDailyRecordExists();
+    dailyMetrics.back().age = age;
 }
 
 /**
@@ -119,7 +143,10 @@ void User::setHeight(float height) {
  * @param weight The new weight of the user in kg
  */
 void User::setWeight(float weight) {
+    // Update member variable and ensure today's daily record exists with updated value
     this->weight = weight;
+    ensureDailyRecordExists();
+    dailyMetrics.back().weight = weight;
 }
 
 /**
@@ -127,7 +154,10 @@ void User::setWeight(float weight) {
  * @param activity The new activity level of the user
  */
 void User::setActivityLevel(ActivityLevel activity) {
+    // Update member variable and ensure today's daily record exists with updated value
     this->activityLevel = activity;
+    ensureDailyRecordExists();
+    dailyMetrics.back().activityLevel = static_cast<int>(activity);
 }
 
 /**
@@ -306,6 +336,15 @@ json User::toJson() const {
     j["activityLevel"] = static_cast<int>(activityLevel);
     j["goal"] = static_cast<int>(goal);
     j["calorieCalcMethod"] = static_cast<int>(calorieCalcMethod);
+    j["lastUpdateTime"] = lastUpdateTime;
+    
+    // Serialize daily metrics
+    json metricsArray = json::array();
+    for (const auto& metric : dailyMetrics) {
+        metricsArray.push_back(metric.toJson());
+    }
+    j["dailyMetrics"] = metricsArray;
+    
     return j;
 }
 
@@ -325,6 +364,19 @@ User User::fromJson(const json& j) {
     if (j.contains("activityLevel")) user.activityLevel = static_cast<ActivityLevel>(j["activityLevel"].get<int>());
     if (j.contains("goal")) user.goal = static_cast<Goal>(j["goal"].get<int>());
     if (j.contains("calorieCalcMethod")) user.calorieCalcMethod = static_cast<CalorieCalculationMethod>(j["calorieCalcMethod"].get<int>());
+    
+    // Load lastUpdateTime if it exists
+    if (j.contains("lastUpdateTime")) {
+        user.lastUpdateTime = j["lastUpdateTime"];
+    }
+    
+    // Load daily metrics if they exist
+    if (j.contains("dailyMetrics") && j["dailyMetrics"].is_array()) {
+        for (const auto& metricJson : j["dailyMetrics"]) {
+            user.dailyMetrics.push_back(DailyMetric::fromJson(metricJson));
+        }
+    }
+    
     return user;
 }
 
@@ -432,4 +484,100 @@ User::CalorieCalculationMethod User::stringToCalorieMethod(const string& str) {
     if (str == "Harris-Benedict") return CalorieCalculationMethod::HARRIS_BENEDICT;
     if (str == "WHO Equation") return CalorieCalculationMethod::WHO_EQUATION;
     return CalorieCalculationMethod::MIFFLIN_ST_JEOR; // Default
+}
+
+/**
+ * needsDailyUpdate Method
+ * @return True if the last update was on a different day
+ */
+bool User::needsDailyUpdate() const {
+    // Check if dailyMetrics is empty or if the last record is from a different day
+    if (dailyMetrics.empty()) {
+        return true;
+    }
+    
+    time_t currentDay = getCurrentDay();
+    time_t lastRecordDay = dailyMetrics.back().timestamp / DAY_LENGTH * DAY_LENGTH;
+    
+    return currentDay > lastRecordDay;
+}
+
+/**
+ * ensureDailyRecordExists Method
+ * Makes sure a record exists for today
+ */
+void User::ensureDailyRecordExists() {
+    if (needsDailyUpdate()) {
+        updateDailyRecord();
+    }
+}
+
+/**
+ * getLastUpdateTime Method
+ * @return The timestamp of the last update
+ */
+time_t User::getLastUpdateTime() const {
+    return lastUpdateTime;
+}
+
+/**
+ * updateDailyRecord Method
+ * Creates or updates the daily record with current user values
+ */
+void User::updateDailyRecord() {
+    time_t now = time(nullptr);
+    DailyMetric metric;
+    metric.timestamp = now;
+    metric.weight = weight;
+    metric.age = age;
+    metric.activityLevel = static_cast<int>(activityLevel);
+    
+    // Check if there's already a record for today
+    if (!dailyMetrics.empty()) {
+        time_t currentDay = getCurrentDay();
+        time_t lastRecordDay = dailyMetrics.back().timestamp / DAY_LENGTH * DAY_LENGTH;
+        
+        if (currentDay == lastRecordDay) {
+            // Update existing record for today
+            dailyMetrics.back() = metric;
+        } else {
+            // Add new record for today
+            dailyMetrics.push_back(metric);
+        }
+    } else {
+        // First record
+        dailyMetrics.push_back(metric);
+    }
+    
+    lastUpdateTime = now;
+}
+
+/**
+ * getDailyMetrics Method
+ * @return The vector of daily metrics
+ */
+const vector<DailyMetric>& User::getDailyMetrics() const {
+    return dailyMetrics;
+}
+
+/**
+ * getFormattedDate Method
+ * @param timestamp The timestamp to format
+ * @return A formatted date string
+ */
+string User::getFormattedDate(time_t timestamp) const {
+    struct tm* timeinfo = localtime(&timestamp);
+    stringstream ss;
+    ss << put_time(timeinfo, "%Y-%m-%d %H:%M");
+    return ss.str();
+}
+
+/**
+ * getCurrentDay Method
+ * @return The timestamp for the start of the current day
+ */
+time_t User::getCurrentDay() const {
+    time_t now = time(nullptr);
+    // Round down to the start of the day (assuming DAY_LENGTH is in seconds)
+    return (now / DAY_LENGTH) * DAY_LENGTH;
 }

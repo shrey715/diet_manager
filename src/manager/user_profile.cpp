@@ -160,6 +160,9 @@ void UserProfile::ensureInitialized() {
             isInitialized = true;
         }
     }
+    
+    // Check if daily update is needed
+    user.ensureDailyRecordExists();
 }
 
 /**

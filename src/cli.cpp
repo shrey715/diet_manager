@@ -46,6 +46,9 @@ void CLI::registerCommands() {
     // General commands
     commands["help"] = [this](const auto& args) { displayHelp(args); };
     helpText["help"] = "Display available commands";
+
+    commands["clear"] = [this](const auto& args) { clearScreen(args); };
+    helpText["clear"] = "Clear the terminal screen";
     
     commands["quit"] = [this](const auto& args) { quitProgram(args); };
     helpText["quit"] = "Exit the program";
@@ -95,12 +98,14 @@ void CLI::registerCommands() {
     commands["calories"] = [this](const auto& args) { viewCalories(args); };
     helpText["calories"] = "calories [date] - Show calorie intake and target";
     
-    // Data management commands
+    commands["history"] = [this](const auto& args) { viewDailyHistory(args); };
+    helpText["history"] = "history [all|last N] - View history of your metrics (weight, age, activity level)";
+
     commands["save"] = [this](const auto& args) { saveData(args); };
-    helpText["save"] = "save - Save all data to files";
-    
+    helpText["save"] = "save - Save the current state to disk";
+
     commands["load"] = [this](const auto& args) { loadData(args); };
-    helpText["load"] = "load - Load all data from files";
+    helpText["load"] = "load - Load the state from disk";
 }
 
 /**
@@ -186,10 +191,10 @@ void CLI::displayHelp(const vector<string>& args) {
         
         // Group commands by category
         map<string, vector<string>> categories = {
-            {"General", {"help", "quit", "exit"}},
+            {"General", {"help", "clear", "quit", "exit"}},
             {"Food Database", {"add-basic-food", "list-foods", "search-foods", "create-composite"}},
             {"Log Management", {"add-food", "remove-food", "view-log", "set-date", "undo", "redo"}},
-            {"User Profile", {"profile", "calories"}},
+            {"User Profile", {"profile", "calories", "history"}},
             {"Data Management", {"save", "load"}}
         };
         
@@ -770,4 +775,74 @@ void CLI::removeFoodFromLog(const vector<string>& args) {
     logHistory.executeCommand("remove-food", params);
     
     cout << TerminalColors::success("Removed '" + foodId + "' from the log.") << endl;
+}
+
+/**
+ * viewDailyHistory Method
+ * @param args Command arguments
+ * Shows the history of daily metrics.
+ */
+void CLI::viewDailyHistory(const vector<string>& args) {
+    User& user = userProfile.getUser();
+    const auto& metrics = user.getDailyMetrics();
+    
+    if (metrics.empty()) {
+        cout << TerminalColors::warning("No metrics history available.") << endl;
+        return;
+    }
+    
+    int limit = -1; // Default: show all records
+    
+    // Parse arguments
+    if (args.size() > 1) {
+        if (args[1] == "all") {
+            limit = -1; // Show all
+        } else if (args[1] == "last" && args.size() > 2) {
+            try {
+                limit = stoi(args[2]);
+                if (limit <= 0) {
+                    throw invalid_argument("Number must be positive");
+                }
+            } catch (const exception&) {
+                throw invalid_argument("Usage: history [all|last N] - N must be a positive number");
+            }
+        }
+    }
+    
+    cout << TerminalColors::bold("\nDaily Metrics History:\n");
+    cout << left 
+         << setw(20) << "Date" 
+         << setw(10) << "Weight" 
+         << setw(10) << "Age" 
+         << "Activity Level" << endl;
+    cout << string(60, '-') << endl;
+    
+    int count = 0;
+    // If limit is set, show only the last 'limit' entries
+    int startIdx = limit > 0 ? max(0, static_cast<int>(metrics.size()) - limit) : 0;
+    
+    for (size_t i = startIdx; i < metrics.size(); i++) {
+        const auto& metric = metrics[i];
+        cout << left 
+             << setw(20) << user.getFormattedDate(metric.timestamp)
+             << setw(10) << metric.weight << " kg"
+             << setw(10) << metric.age
+             << User::activityLevelToString(static_cast<User::ActivityLevel>(metric.activityLevel)) 
+             << endl;
+        count++;
+    }
+    
+    cout << endl << TerminalColors::info("Showing " + to_string(count) + " of " + to_string(metrics.size()) + " records.") << endl;
+}
+
+/**
+ * Clear Screen Method
+ * Clears the terminal screen.
+ */
+void CLI::clearScreen(const vector<string>& args) {
+    (void)args; // Suppress unused parameter warning
+    
+    // ANSI escape code to clear the screen
+    cout << "\033[2J\033[1;1H";
+    cout << TerminalColors::bold("Screen cleared.") << endl;
 }

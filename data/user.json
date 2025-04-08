@@ -1,10 +1,67 @@
 {
-    "activityLevel": 0,
+    "activityLevel": 2,
     "age": 19,
     "calorieCalcMethod": 1,
+    "dailyMetrics": [
+        {
+            "activityLevel": 1,
+            "age": 19,
+            "timestamp": 1744113669,
+            "weight": 69.0
+        },
+        {
+            "activityLevel": 1,
+            "age": 19,
+            "timestamp": 1744114781,
+            "weight": 69.0
+        },
+        {
+            "activityLevel": 1,
+            "age": 19,
+            "timestamp": 1744114795,
+            "weight": 69.0
+        },
+        {
+            "activityLevel": 2,
+            "age": 19,
+            "timestamp": 1744114805,
+            "weight": 69.0
+        },
+        {
+            "activityLevel": 2,
+            "age": 19,
+            "timestamp": 1744114810,
+            "weight": 69.0
+        },
+        {
+            "activityLevel": 2,
+            "age": 19,
+            "timestamp": 1744114827,
+            "weight": 65.0
+        },
+        {
+            "activityLevel": 2,
+            "age": 19,
+            "timestamp": 1744114847,
+            "weight": 65.0
+        },
+        {
+            "activityLevel": 2,
+            "age": 19,
+            "timestamp": 1744114851,
+            "weight": 6.0
+        },
+        {
+            "activityLevel": 2,
+            "age": 19,
+            "timestamp": 1744114865,
+            "weight": 6.0
+        }
+    ],
     "gender": 0,
-    "goal": 2,
+    "goal": 0,
     "height": 174.0,
+    "lastUpdateTime": 1744114865,
     "name": "Shreyas Deb",
-    "weight": 59.0
+    "weight": 6.0
 }

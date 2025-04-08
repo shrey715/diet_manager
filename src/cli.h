@@ -67,10 +67,16 @@ private:
     void viewProfile(const vector<string>& args);
     void updateProfile(const vector<string>& args);
     void viewCalories(const vector<string>& args);
+    void viewDailyHistory(const vector<string>& args);  // New command
     
     // Data management commands
     void saveData(const vector<string>& args);
     void loadData(const vector<string>& args);
+    void manualSave(const vector<string>& args);  // Add this
+    void manualLoad(const vector<string>& args);  // Add this
+    
+    // UI commands
+    void clearScreen(const vector<string>& args);
     
     // Exit command
     void quitProgram(const vector<string>& args);

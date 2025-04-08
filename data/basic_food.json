@@ -8,12 +8,12 @@
         ]
     },
     {
-        "calories": 60.0,
-        "id": "orange",
+        "calories": 160.0,
+        "id": "avocado",
         "keywords": [
-            "orange",
+            "avocado",
             "fruit",
-            "citrus"
+            "healthy fat"
         ]
     },
     {
@@ -22,6 +22,24 @@
         "keywords": [
             "banana",
             "fruit"
+        ]
+    },
+    {
+        "calories": 180.0,
+        "id": "beef",
+        "keywords": [
+            "beef",
+            "meat",
+            "protein"
+        ]
+    },
+    {
+        "calories": 45.0,
+        "id": "carrot",
+        "keywords": [
+            "carrot",
+            "vegetable",
+            "root"
         ]
     },
     {
@@ -35,48 +53,19 @@
     },
     {
         "calories": 250.0,
-        "id": "salmon",
+        "id": "chocolate",
         "keywords": [
-            "salmon",
-            "fish",
-            "seafood",
+            "chocolate",
+            "sweet",
+            "dessert"
+        ]
+    },
+    {
+        "calories": 65.0,
+        "id": "egg",
+        "keywords": [
+            "egg",
             "protein"
-        ]
-    },
-    {
-        "calories": 120.0,
-        "id": "rice",
-        "keywords": [
-            "rice",
-            "grain",
-            "carb"
-        ]
-    },
-    {
-        "calories": 140.0,
-        "id": "pasta",
-        "keywords": [
-            "pasta",
-            "noodles",
-            "carb"
-        ]
-    },
-    {
-        "calories": 25.0,
-        "id": "spinach",
-        "keywords": [
-            "spinach",
-            "vegetable",
-            "greens"
-        ]
-    },
-    {
-        "calories": 45.0,
-        "id": "carrot",
-        "keywords": [
-            "carrot",
-            "vegetable",
-            "root"
         ]
     },
     {
@@ -99,38 +88,31 @@
         ]
     },
     {
-        "calories": 65.0,
-        "id": "egg",
+        "calories": 95.0,
+        "id": "oats",
         "keywords": [
-            "egg",
-            "protein"
+            "oats",
+            "grain",
+            "breakfast",
+            "fiber"
         ]
     },
     {
-        "calories": 180.0,
-        "id": "beef",
+        "calories": 60.0,
+        "id": "orange",
         "keywords": [
-            "beef",
-            "meat",
-            "protein"
-        ]
-    },
-    {
-        "calories": 115.0,
-        "id": "potato",
-        "keywords": [
-            "potato",
-            "vegetable",
-            "starch"
-        ]
-    },
-    {
-        "calories": 160.0,
-        "id": "avocado",
-        "keywords": [
-            "avocado",
+            "orange",
             "fruit",
-            "healthy fat"
+            "citrus"
+        ]
+    },
+    {
+        "calories": 140.0,
+        "id": "pasta",
+        "keywords": [
+            "pasta",
+            "noodles",
+            "carb"
         ]
     },
     {
@@ -144,22 +126,40 @@
         ]
     },
     {
-        "calories": 95.0,
-        "id": "oats",
+        "calories": 115.0,
+        "id": "potato",
         "keywords": [
-            "oats",
+            "potato",
+            "vegetable",
+            "starch"
+        ]
+    },
+    {
+        "calories": 120.0,
+        "id": "rice",
+        "keywords": [
+            "rice",
             "grain",
-            "breakfast",
-            "fiber"
+            "carb"
         ]
     },
     {
         "calories": 250.0,
-        "id": "chocolate",
+        "id": "salmon",
         "keywords": [
-            "chocolate",
-            "sweet",
-            "dessert"
+            "salmon",
+            "fish",
+            "seafood",
+            "protein"
+        ]
+    },
+    {
+        "calories": 25.0,
+        "id": "spinach",
+        "keywords": [
+            "spinach",
+            "vegetable",
+            "greens"
         ]
     }
 ]
