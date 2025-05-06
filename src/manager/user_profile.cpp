@@ -1,3 +1,23 @@
+/**
+ * @file user_profile.cpp
+ * @brief User Profile Management Implementation
+ * 
+ * This file implements the UserProfile class defined in user_profile.h.
+ * It provides functionality for managing user data, including personal information
+ * and dietary preferences, and calculating target calorie values based on user attributes.
+ * 
+ * Key implementations:
+ * - Singleton pattern for global profile access
+ * - User attribute update methods with validation
+ * - Multiple calorie calculation methods (Harris-Benedict, Mifflin-St Jeor, WHO Equation)
+ * - JSON serialization and deserialization
+ * - Profile initialization and verification
+ * 
+ * The implementation supports different formulas for calorie calculations based on
+ * gender, age, weight, height, and activity level, allowing users to choose their
+ * preferred calculation method.
+ */
+
 #include "user_profile.h"
 #include <fstream>
 #include <iostream>

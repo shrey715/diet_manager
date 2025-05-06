@@ -1,3 +1,22 @@
+/**
+ * @file food_database.h
+ * @brief Food Database Management System
+ * 
+ * This file defines the FoodDatabase class which manages the collection of food items
+ * in the diet manager application. The database stores both basic and composite food items,
+ * and provides functionality to add, retrieve, search, and persist these items.
+ * 
+ * Key features:
+ * - Singleton pattern implementation for global access
+ * - Storage of basic and composite food items
+ * - Food search functionality by ID or keywords
+ * - Creation of composite foods from basic components
+ * - Serialization and deserialization to/from JSON files
+ * - Extensibility for additional food data sources
+ * 
+ * The database serves as the central repository for all food information used by the application.
+ */
+
 #ifndef FOOD_DATABASE_H
 #define FOOD_DATABASE_H
 

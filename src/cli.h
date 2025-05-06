@@ -1,3 +1,21 @@
+/**
+ * @file cli.h
+ * @brief Command Line Interface Definitions
+ * 
+ * This file defines the CLI class which provides the command-line interface
+ * for the diet manager application. It declares methods for handling user commands,
+ * managing application state, and interacting with the core functionality.
+ * 
+ * Key components:
+ * - Command registration and handling system
+ * - Methods for all supported commands (food, log, profile management)
+ * - User input parsing and validation
+ * - Output formatting utilities
+ * 
+ * The CLI class serves as the main interface between the user and the application,
+ * translating text commands into actions on the underlying data models.
+ */
+
 #ifndef CLI_H
 #define CLI_H
 

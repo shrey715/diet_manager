@@ -1,3 +1,22 @@
+/**
+ * @file user.h
+ * @brief User Model Definitions
+ * 
+ * This file defines the User class which represents a user of the diet manager application
+ * and stores their personal information and preferences. It also includes the DailyMetric
+ * struct for tracking changes in user metrics over time.
+ * 
+ * Key components:
+ * - User class with personal attributes (name, age, gender, height, weight)
+ * - Activity levels, goals, and calorie calculation method preferences
+ * - BMI and calorie requirement calculation functions using multiple formulas
+ * - Daily metrics history for tracking changes over time
+ * - Serialization and deserialization to/from JSON
+ * 
+ * The User class encapsulates all user-specific data and calculation methods,
+ * serving as the foundation for personalized dietary recommendations.
+ */
+
 #ifndef USER_H
 #define USER_H
 

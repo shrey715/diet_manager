@@ -1,3 +1,21 @@
+/**
+ * @file terminal_colors.h
+ * @brief Terminal Text Formatting Utilities
+ * 
+ * This file defines a namespace with constants and utility functions for
+ * formatting text output in the terminal with colors and styles. It provides
+ * a simple interface for adding visual elements to the command-line interface.
+ * 
+ * Key components:
+ * - Color code constants for different text colors
+ * - Text style constants (bold, underline)
+ * - Utility functions for applying colors and styles to text
+ * - Specialized formatting for different message types (error, success, warning, info)
+ * 
+ * These utilities enhance the user experience by providing visual cues and
+ * improving the readability of the command-line interface.
+ */
+
 #ifndef TERMINAL_COLORS_H
 #define TERMINAL_COLORS_H
 

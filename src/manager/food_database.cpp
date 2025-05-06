@@ -1,3 +1,24 @@
+/**
+ * @file food_database.cpp
+ * @brief Food Database Management Implementation
+ * 
+ * This file implements the FoodDatabase class defined in food_database.h.
+ * It provides the core functionality for managing food items in the diet manager application,
+ * including adding, retrieving, and searching for foods, as well as persistence operations.
+ * 
+ * Key implementations:
+ * - Singleton pattern for global database access
+ * - CRUD operations for basic and composite food items
+ * - Food searching algorithms with keyword matching
+ * - JSON serialization and deserialization
+ * - ID generation and validation
+ * - Calorie calculations for composite foods
+ * - Data source integration for extensibility
+ * 
+ * The implementation supports both basic foods with direct calorie values and
+ * composite foods composed of other food items with specific serving quantities.
+ */
+
 #include "food_database.h"
 #include <fstream>
 #include <iostream>

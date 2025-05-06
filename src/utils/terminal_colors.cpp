@@ -1,3 +1,21 @@
+/**
+ * @file terminal_colors.cpp
+ * @brief Terminal Text Formatting Implementation
+ * 
+ * This file implements the utility functions and constants defined in terminal_colors.h
+ * for formatting text output in the terminal. It uses ANSI escape codes to provide
+ * colored and styled text in terminal environments that support these codes.
+ * 
+ * Key implementations:
+ * - Definition of color and style constants using ANSI escape sequences
+ * - Implementation of text formatting utility functions
+ * - Message type formatting (error, success, warning, info)
+ * 
+ * The implementation uses standard ANSI escape codes which are supported by
+ * most modern terminal emulators, providing a consistent experience across
+ * different platforms and environments.
+ */
+
 #include "terminal_colors.h"
 using namespace std;
 

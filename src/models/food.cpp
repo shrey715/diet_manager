@@ -1,3 +1,22 @@
+/**
+ * @file food.cpp
+ * @brief Food Model Implementation
+ * 
+ * This file implements the Food class hierarchy defined in food.h, providing
+ * the concrete functionality for basic and composite food items. It includes
+ * methods for accessing food properties, calculating calories, and managing
+ * composite food components.
+ * 
+ * Key implementations:
+ * - Constructors for Food, BasicFood, and CompositeFood classes
+ * - Calorie calculation for both basic and composite foods
+ * - Component management for composite foods (recipes)
+ * - Food type identification and property access
+ * 
+ * The implementation supports the Composite design pattern, allowing for
+ * uniform treatment of both basic ingredients and complex recipes.
+ */
+
 #include "food.h"
 
 /**

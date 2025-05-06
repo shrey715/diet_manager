@@ -1,3 +1,21 @@
+/**
+ * @file log_entry.h
+ * @brief Food Logging System Definitions
+ * 
+ * This file defines the classes related to food consumption logging in the diet manager
+ * application. It implements both individual log entries for specific dates and a history
+ * management system with undo/redo capabilities.
+ * 
+ * Key components:
+ * - LogEntry class representing a single day's food consumption record
+ * - LogHistory class managing a collection of log entries with undo/redo functionality
+ * - Command pattern implementation for log operations
+ * - Serialization and deserialization to/from JSON
+ * 
+ * The logging system tracks food consumption over time, allowing users to monitor
+ * their dietary habits and calorie intake across multiple days.
+ */
+
 #ifndef LOG_ENTRY_H
 #define LOG_ENTRY_H
 

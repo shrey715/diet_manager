@@ -1,3 +1,20 @@
+/**
+ * @file food.h
+ * @brief Food Model Definitions
+ * 
+ * This file defines the classes that represent food items in the diet manager application.
+ * It implements a class hierarchy using the Composite design pattern to model both basic
+ * food items and composite foods (recipes) that consist of multiple ingredients.
+ * 
+ * Key components:
+ * - Abstract Food base class defining the common interface for all food items
+ * - BasicFood class representing individual food items with direct calorie values
+ * - CompositeFood class representing recipes composed of other food items
+ * 
+ * The Food hierarchy allows for uniform treatment of both simple and complex foods
+ * throughout the application, simplifying calorie calculations and food management.
+ */
+
 #ifndef FOOD_H
 #define FOOD_H
 

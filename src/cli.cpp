@@ -1,3 +1,21 @@
+/**
+ * @file cli.cpp
+ * @brief Command Line Interface (CLI) Implementation
+ * 
+ * This file implements the CLI class which handles user interactions with the diet manager
+ * application. It processes commands entered by users, executes the appropriate functions,
+ * and displays output in a formatted manner. The CLI connects the user interface with
+ * the core functionality of the application, including food database management, user profile
+ * operations, food logging, and calculation of nutritional information.
+ * 
+ * Key responsibilities:
+ * - Processing user commands and arguments
+ * - Displaying formatted output to the console
+ * - Error handling and validation of user input
+ * - Managing the application state and flow
+ * - Handling data persistence operations (save/load)
+ */
+
 #include "cli.h"
 #include <iostream>
 #include <sstream>

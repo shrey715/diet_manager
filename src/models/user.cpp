@@ -1,3 +1,22 @@
+/**
+ * @file user.cpp
+ * @brief User Model Implementation
+ * 
+ * This file implements the User class defined in user.h, providing functionality
+ * for managing user data, calculating nutritional requirements, and tracking
+ * changes in user metrics over time.
+ * 
+ * Key implementations:
+ * - Multiple BMR calculation methods (Harris-Benedict, Mifflin-St Jeor, WHO Equation)
+ * - Daily calorie needs based on activity level and goals
+ * - Tracking of user metrics over time in daily records
+ * - JSON serialization and deserialization
+ * - Utility methods for date formatting and string conversions
+ * 
+ * The User class implementation serves as the central repository for all user-specific
+ * data and calculations needed for personalized dietary recommendations.
+ */
+
 #include "user.h"
 #include <ctime>
 #include <iomanip>

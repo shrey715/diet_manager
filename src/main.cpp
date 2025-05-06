@@ -1,3 +1,9 @@
+/**
+ * @file main.cpp
+ * @brief Main entry point for the diet manager application.
+ * 
+ */
+
 #include <iostream>
 #include <string>
 #include <filesystem>

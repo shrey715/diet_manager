@@ -1,3 +1,22 @@
+/**
+ * @file log_entry.cpp
+ * @brief Food Logging System Implementation
+ * 
+ * This file implements the LogEntry and LogHistory classes defined in log_entry.h,
+ * providing functionality for tracking food consumption and managing the history
+ * of dietary records with undo/redo capabilities.
+ * 
+ * Key implementations:
+ * - Adding and removing foods from daily logs
+ * - Command pattern for log operations (add, remove)
+ * - Undo and redo functionality for log commands
+ * - Log retrieval and management across multiple dates
+ * - JSON serialization and deserialization
+ * 
+ * The implementation uses the Command design pattern to provide a flexible and
+ * powerful history management system with full undo/redo capabilities.
+ */
+
 #include "log_entry.h"
 #include <chrono>
 #include <ctime>
